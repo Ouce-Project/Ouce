@@ -1,2 +1,2 @@
-# Ou-a-me
+# Ouça-me
 Plataforma de edição de áudio.
