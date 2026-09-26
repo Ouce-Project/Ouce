@@ -31,7 +31,7 @@ body{
   overflow-x:hidden;position:relative;padding:32px 16px;
 }
 
-/* liquid metaball background */
+
 .liquid-wrap{position:fixed;inset:0;z-index:0;filter:url(#goo);overflow:hidden;}
 .blob{position:absolute;border-radius:50%;animation:float linear infinite;}
 .blob.blue{background:radial-gradient(circle at 35% 30%, var(--blue-soft), var(--blue) 60%, transparent 80%);}
@@ -125,7 +125,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
 
 <div class="card">
   <div class="top-row">
-    <span class="tag">reprodutor</span>
+    <span class="tag">Ouça-me</span>
     <label class="upload-btn" for="fileInput">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       Carregar áudio
@@ -133,8 +133,8 @@ h1:focus{background:rgba(255,255,255,0.06);}
     <input type="file" id="fileInput" accept="audio/*">
   </div>
 
-  <h1 id="title" contenteditable="true" spellcheck="false">eletro</h1>
-  <div class="artist" id="artist" contenteditable="true" spellcheck="false">Criador · DistrokidOfficial</div>
+  <h1 id="title" contenteditable="true" spellcheck="false">Música cadê você?</h1>
+  <div class="artist" id="artist" contenteditable="true" spellcheck="false">Criador · Zé ninguém ¯\_(ツ)_/¯</div>
 
   <canvas class="viz" id="viz"></canvas>
 
@@ -167,12 +167,12 @@ h1:focus{background:rgba(255,255,255,0.06);}
   <div class="empty-hint" id="hint">Carregue um áudio para começar a reprodução</div>
 </div>
 
-<div class="sig"><span class="by">By</span><span class="name">xMqR</span></div>
+<div class="sig"><span class="by">Feito pelo xMqR <3</span></div>
 
 <audio id="audio"></audio>
 
 <script>
-// liquid metaball blobs
+
 const wrap=document.getElementById('liquidWrap');
 const palette=['blue','grey','blue','grey','blue','grey','blue'];
 for(let i=0;i<7;i++){
@@ -197,7 +197,7 @@ for(let i=0;i<7;i++){
   wrap.appendChild(b);
 }
 
-// waveform canvas — live equalizer reacting to the actual playing audio, eased for smooth motion
+
 const viz=document.getElementById('viz');
 const vctx=viz.getContext('2d');
 const BARS=56;
@@ -223,7 +223,7 @@ function roundRect(c,x,y,w,h,r){
   c.closePath();
 }
 
-// group FFT bins logarithmically so bass doesn't dominate and treble bars still move
+
 function computeBands(binCount){
   const bands=[];
   const minIndex=1, maxIndex=binCount-1;
@@ -256,10 +256,10 @@ function draw(){
       const [s,e]=bandBounds[i];
       let peak=0;
       for(let k=s;k<e;k++){ if(dataArray[k]>peak) peak=dataArray[k]; }
-      const tilt=0.9+(i/(BARS-1))*0.55; // mild boost for treble bars
-      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; // true-to-volume, no artificial lift on quiet audio
+      const tilt=0.9+(i/(BARS-1))*0.55; 
+      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; 
     }
-    smoothBars[i] += (targetH-smoothBars[i])*0.16; // eased so it flows instead of flashing
+    smoothBars[i] += (targetH-smoothBars[i])*0.16; 
     const barH=(smoothBars[i]/100)*h;
     const x=i*(barW+gap);
     const y=h-barH;
