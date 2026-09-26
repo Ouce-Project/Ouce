@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>reprodutor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Alex+Brush&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111113;
+  --bg2:#1b1c1f;
+  --white:#ffffff;
+  --blue:#0322ef;
+  --blue-soft:#3a4cff;
+  --dim:#9a9ba3;
+  --glass:rgba(255,255,255,0.05);
+  --glass-border:rgba(255,255,255,0.13);
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;min-height:100%;
+  background:var(--bg);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  display:flex;align-items:center;justify-content:center;
+  overflow-x:hidden;position:relative;padding:32px 16px;
+}
+
+/* liquid metaball background */
+.liquid-wrap{position:fixed;inset:0;z-index:0;filter:url(#goo);overflow:hidden;}
+.blob{position:absolute;border-radius:50%;animation:float linear infinite;}
+.blob.blue{background:radial-gradient(circle at 35% 30%, var(--blue-soft), var(--blue) 60%, transparent 80%);}
+.blob.grey{background:radial-gradient(circle at 35% 30%, #3a3b41, #232428 60%, transparent 80%);}
+@keyframes float{
+  0%{transform:translate(0,0) scale(1);}
+  25%{transform:translate(var(--x1),var(--y1)) scale(var(--s1));}
+  50%{transform:translate(var(--x2),var(--y2)) scale(var(--s2));}
+  75%{transform:translate(var(--x3),var(--y3)) scale(var(--s3));}
+  100%{transform:translate(0,0) scale(1);}
+}
+@media (prefers-reduced-motion: reduce){ .blob{animation:none;} }
+
+.card{
+  position:relative;z-index:1;width:100%;max-width:440px;
+  background:linear-gradient(155deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02));
+  border:1px solid var(--glass-border);border-radius:26px;
+  padding:26px 24px 22px;
+  backdrop-filter:blur(26px) saturate(150%);
+  -webkit-backdrop-filter:blur(26px) saturate(150%);
+  box-shadow:0 30px 60px -20px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.12) inset;
+}
+
+.top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.tag{font-size:11px;letter-spacing:.03em;color:var(--dim);background:var(--glass);border:1px solid var(--glass-border);padding:5px 10px;border-radius:100px;}
+.upload-btn{display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;font-size:12px;color:var(--white);background:rgba(3,34,239,0.18);border:1px solid rgba(3,34,239,0.5);padding:6px 12px;border-radius:100px;cursor:pointer;transition:background .2s;}
+.upload-btn:hover{background:rgba(3,34,239,0.32);}
+.upload-btn svg{width:14px;height:14px;}
+input[type=file]{display:none;}
+
+h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;margin:2px 0 2px;outline:none;cursor:text;border-radius:8px;padding:2px 4px;transition:background .2s;}
+h1:focus{background:rgba(255,255,255,0.06);}
+.artist{color:var(--dim);font-size:13px;margin-bottom:18px;outline:none;cursor:text;border-radius:6px;padding:1px 3px;}
+.artist:focus{background:rgba(255,255,255,0.06);}
+
+.viz{width:100%;height:104px;margin-bottom:14px;display:block;border-radius:8px;}
+
+.progress-bar{position:relative;height:6px;border-radius:100px;background:rgba(255,255,255,0.1);cursor:pointer;overflow:hidden;}
+.progress-fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,var(--blue),var(--blue-soft));border-radius:100px;}
+.times{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px;font-variant-numeric:tabular-nums;}
+
+.controls{display:flex;align-items:center;justify-content:center;gap:16px;margin:18px 0 6px;}
+.ctrl-btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s,background .2s;}
+.ctrl-btn svg{width:18px;height:18px;stroke:var(--white);fill:none;}
+.ctrl-btn:hover{background:rgba(255,255,255,0.12);}
+.ctrl-btn:active{transform:scale(.92);}
+.ctrl-btn.play{width:58px;height:58px;background:linear-gradient(160deg,var(--blue-soft),var(--blue));box-shadow:0 8px 24px -6px rgba(3,34,239,0.6);border:none;}
+.ctrl-btn.play svg{width:20px;height:20px;fill:var(--white);stroke:none;}
+.ctrl-btn.active{background:rgba(3,34,239,0.28);border-color:rgba(3,34,239,0.6);}
+
+.bottom-row{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:10px;}
+.mini{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);}
+.mini input[type=range]{-webkit-appearance:none;width:70px;height:3px;background:rgba(255,255,255,0.15);border-radius:10px;}
+.mini input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--blue-soft);cursor:pointer;}
+
+.empty-hint{font-size:12px;color:var(--dim);text-align:center;margin-top:4px;}
+
+.settings-panel{max-height:0;overflow:hidden;opacity:0;margin-top:0;transition:max-height .35s ease, opacity .3s ease, margin-top .35s ease;}
+.settings-panel.open{max-height:140px;opacity:1;margin-top:14px;}
+.settings-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--dim);padding:7px 2px;}
+.settings-row span:first-child{width:56px;color:var(--white);flex-shrink:0;}
+.settings-row span:last-child{width:38px;text-align:right;font-variant-numeric:tabular-nums;flex-shrink:0;}
+.settings-row input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:rgba(255,255,255,0.15);border-radius:10px;}
+.settings-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--blue-soft);cursor:pointer;}
+.ctrl-btn.settings.active{background:rgba(3,34,239,0.28);border-color:rgba(3,34,239,0.6);}
+
+.sig{
+  position:fixed;right:18px;bottom:18px;display:flex;align-items:baseline;gap:6px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);
+  backdrop-filter:blur(16px);padding:8px 18px;border-radius:100px;
+  opacity:0;transform:translateY(14px);
+  animation:sigIn .6s ease forwards 1.4s, sigPulse 3.4s ease-in-out infinite 2.4s;
+  z-index:2;box-shadow:0 10px 30px -10px rgba(0,0,0,0.6);
+}
+.sig .by{font-family:'Inter',sans-serif;font-size:12px;color:var(--white);opacity:.85;}
+.sig .name{font-family:'Alex Brush',cursive;font-size:24px;color:var(--white);line-height:1;}
+@keyframes sigIn{to{opacity:1;transform:translateY(0);}}
+@keyframes sigPulse{0%,100%{box-shadow:0 10px 30px -10px rgba(0,0,0,0.6);}50%{box-shadow:0 10px 34px -6px rgba(3,34,239,0.5);}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <filter id="goo">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"/>
+    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="goo"/>
+  </filter>
+</svg>
+
+<div class="liquid-wrap" id="liquidWrap"></div>
+
+<div class="card">
+  <div class="top-row">
+    <span class="tag">reprodutor</span>
+    <label class="upload-btn" for="fileInput">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      Carregar áudio
+    </label>
+    <input type="file" id="fileInput" accept="audio/*">
+  </div>
+
+  <h1 id="title" contenteditable="true" spellcheck="false">eletro</h1>
+  <div class="artist" id="artist" contenteditable="true" spellcheck="false">Criador · DistrokidOfficial</div>
+
+  <canvas class="viz" id="viz"></canvas>
+
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="times"><span id="curTime">00:00</span><span id="durTime">00:00</span></div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn settings" id="settingsBtn" title="Configurações">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    <button class="ctrl-btn play" id="playBtn" title="Play/Pause">
+      <svg id="playIcon" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
+    </button>
+    <button class="ctrl-btn" id="muteBtn" title="Mudo">
+      <svg id="muteIcon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4,9 8,9 12,5 12,19 8,15 4,15" fill="#fff" stroke="none"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+    </button>
+  </div>
+
+  <div class="bottom-row">
+    <div class="mini">Volume<input type="range" id="vol" min="0" max="1" step="0.01" value="1"></div>
+  </div>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-row"><span>Slowed</span><input type="range" id="slowedRange" min="0" max="1" step="0.01" value="0"><span id="slowedVal">0%</span></div>
+    <div class="settings-row"><span>Reverb</span><input type="range" id="reverbRange" min="0" max="1" step="0.01" value="0"><span id="reverbVal">0%</span></div>
+  </div>
+
+  <div class="empty-hint" id="hint">Carregue um áudio para começar a reprodução</div>
+</div>
+
+<div class="sig"><span class="by">By</span><span class="name">xMqR</span></div>
+
+<audio id="audio"></audio>
+
+<script>
+// liquid metaball blobs
+const wrap=document.getElementById('liquidWrap');
+const palette=['blue','grey','blue','grey','blue','grey','blue'];
+for(let i=0;i<7;i++){
+  const b=document.createElement('div');
+  b.className='blob '+palette[i];
+  const size=140+Math.random()*220;
+  b.style.width=size+'px';
+  b.style.height=size+'px';
+  b.style.left=(Math.random()*90)+'%';
+  b.style.top=(Math.random()*90)+'%';
+  b.style.setProperty('--x1',(Math.random()*200-100)+'px');
+  b.style.setProperty('--y1',(Math.random()*200-100)+'px');
+  b.style.setProperty('--x2',(Math.random()*240-120)+'px');
+  b.style.setProperty('--y2',(Math.random()*240-120)+'px');
+  b.style.setProperty('--x3',(Math.random()*200-100)+'px');
+  b.style.setProperty('--y3',(Math.random()*200-100)+'px');
+  b.style.setProperty('--s1',(0.8+Math.random()*0.5));
+  b.style.setProperty('--s2',(0.7+Math.random()*0.6));
+  b.style.setProperty('--s3',(0.9+Math.random()*0.4));
+  b.style.animationDuration=(20+Math.random()*20)+'s';
+  b.style.animationDelay=(-Math.random()*20)+'s';
+  wrap.appendChild(b);
+}
+
+// waveform canvas — live equalizer reacting to the actual playing audio, eased for smooth motion
+const viz=document.getElementById('viz');
+const vctx=viz.getContext('2d');
+const BARS=56;
+const smoothBars=new Float32Array(BARS).fill(6);
+let bandBounds=null;
+function resizeViz(){
+  const rect=viz.getBoundingClientRect();
+  const dpr=window.devicePixelRatio||1;
+  viz.width=rect.width*dpr;
+  viz.height=rect.height*dpr;
+  vctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize',resizeViz);
+requestAnimationFrame(resizeViz);
+
+function roundRect(c,x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y);
+  c.arcTo(x+w,y,x+w,y+h,r);
+  c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r);
+  c.arcTo(x,y,x+w,y,r);
+  c.closePath();
+}
+
+// group FFT bins logarithmically so bass doesn't dominate and treble bars still move
+function computeBands(binCount){
+  const bands=[];
+  const minIndex=1, maxIndex=binCount-1;
+  const logMin=Math.log2(minIndex), logMax=Math.log2(maxIndex);
+  for(let i=0;i<BARS;i++){
+    let idx0=Math.round(Math.pow(2, logMin+(logMax-logMin)*(i/BARS)));
+    let idx1=Math.round(Math.pow(2, logMin+(logMax-logMin)*((i+1)/BARS)));
+    idx0=Math.max(minIndex,idx0);
+    idx1=Math.max(idx0+1,Math.min(maxIndex,idx1));
+    bands.push([idx0,idx1]);
+  }
+  return bands;
+}
+
+function draw(){
+  requestAnimationFrame(draw);
+  const w=viz.clientWidth, h=viz.clientHeight;
+  if(!w||!h) return;
+  vctx.clearRect(0,0,w,h);
+  const gap=3;
+  const barW=(w-gap*(BARS-1))/BARS;
+  const grad=vctx.createLinearGradient(0,0,w,0);
+  grad.addColorStop(0,'#ffffff');
+  grad.addColorStop(1,'#3a4cff');
+  const playing = analyser && !audio.paused;
+  if(playing){ analyser.getByteFrequencyData(dataArray); if(!bandBounds) bandBounds=computeBands(dataArray.length); }
+  for(let i=0;i<BARS;i++){
+    let targetH=6;
+    if(playing && bandBounds){
+      const [s,e]=bandBounds[i];
+      let peak=0;
+      for(let k=s;k<e;k++){ if(dataArray[k]>peak) peak=dataArray[k]; }
+      const tilt=0.9+(i/(BARS-1))*0.55; // mild boost for treble bars
+      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; // true-to-volume, no artificial lift on quiet audio
+    }
+    smoothBars[i] += (targetH-smoothBars[i])*0.16; // eased so it flows instead of flashing
+    const barH=(smoothBars[i]/100)*h;
+    const x=i*(barW+gap);
+    const y=h-barH;
+    vctx.fillStyle=grad;
+    roundRect(vctx,x,y,barW,barH,barW/2.4);
+    vctx.fill();
+  }
+}
+
+const audio=document.getElementById('audio');
+const fileInput=document.getElementById('fileInput');
+const playBtn=document.getElementById('playBtn');
+const playIcon=document.getElementById('playIcon');
+const muteBtn=document.getElementById('muteBtn');
+const progressBar=document.getElementById('progressBar');
+const progressFill=document.getElementById('progressFill');
+const curTime=document.getElementById('curTime');
+const durTime=document.getElementById('durTime');
+const vol=document.getElementById('vol');
+const hint=document.getElementById('hint');
+const settingsBtn=document.getElementById('settingsBtn');
+const settingsPanel=document.getElementById('settingsPanel');
+const slowedRange=document.getElementById('slowedRange');
+const slowedVal=document.getElementById('slowedVal');
+const reverbRange=document.getElementById('reverbRange');
+const reverbVal=document.getElementById('reverbVal');
+
+let audioCtx, source, analyser, dataArray, dryGain, wetGain, convolver;
+function fmt(t){ if(!isFinite(t))return '00:00'; const m=Math.floor(t/60),s=Math.floor(t%60); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
+
+function makeReverbBuffer(ctx, seconds, decay){
+  const rate=ctx.sampleRate;
+  const length=Math.floor(rate*seconds);
+  const buf=ctx.createBuffer(2,length,rate);
+  for(let ch=0;ch<2;ch++){
+    const data=buf.getChannelData(ch);
+    for(let i=0;i<length;i++){ data[i]=(Math.random()*2-1)*Math.pow(1-i/length,decay); }
+  }
+  return buf;
+}
+
+function setupAnalyser(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  source = audioCtx.createMediaElementSource(audio);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = 0.6;
+  dryGain = audioCtx.createGain(); dryGain.gain.value=1;
+  wetGain = audioCtx.createGain(); wetGain.gain.value=0;
+  convolver = audioCtx.createConvolver();
+  convolver.buffer = makeReverbBuffer(audioCtx, 2.8, 3.2);
+  source.connect(analyser);
+  analyser.connect(dryGain);
+  analyser.connect(convolver);
+  convolver.connect(wetGain);
+  dryGain.connect(audioCtx.destination);
+  wetGain.connect(audioCtx.destination);
+  dataArray = new Uint8Array(analyser.frequencyBinCount);
+}
+
+settingsBtn.addEventListener('click', ()=>{
+  setupAnalyser();
+  settingsPanel.classList.toggle('open');
+  settingsBtn.classList.toggle('active');
+});
+
+slowedRange.addEventListener('input', ()=>{
+  const t=parseFloat(slowedRange.value);
+  slowedVal.textContent=Math.round(t*100)+'%';
+  audio.playbackRate = 1 - t*0.5;
+  const drop = t>0.02;
+  audio.preservesPitch=!drop; audio.mozPreservesPitch=!drop; audio.webkitPreservesPitch=!drop;
+});
+
+reverbRange.addEventListener('input', ()=>{
+  setupAnalyser();
+  const t=parseFloat(reverbRange.value);
+  reverbVal.textContent=Math.round(t*100)+'%';
+  wetGain.gain.setTargetAtTime(t*0.6, audioCtx.currentTime, 0.2);
+  dryGain.gain.setTargetAtTime(1 - t*0.25, audioCtx.currentTime, 0.2);
+});
+
+fileInput.addEventListener('change', e=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  const url=URL.createObjectURL(f);
+  audio.src=url;
+  hint.style.display='none';
+  const name=f.name.replace(/\.[^/.]+$/,'');
+  document.getElementById('title').textContent=name;
+  setupAnalyser();
+  audio.play().catch(()=>{});
+});
+
+playBtn.addEventListener('click',()=>{
+  if(!audio.src){ fileInput.click(); return; }
+  if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
+  if(audio.paused){ audio.play(); } else { audio.pause(); }
+});
+audio.addEventListener('play',()=>{ playIcon.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'; });
+audio.addEventListener('pause',()=>{ playIcon.innerHTML='<polygon points="6,4 20,12 6,20"/>'; });
+
+muteBtn.addEventListener('click',()=>{
+  audio.muted=!audio.muted;
+  muteBtn.classList.toggle('active',audio.muted);
+});
+
+vol.addEventListener('input',()=>{ audio.volume=vol.value; });
+
+audio.addEventListener('loadedmetadata',()=>{ durTime.textContent=fmt(audio.duration); });
+audio.addEventListener('timeupdate',()=>{
+  curTime.textContent=fmt(audio.currentTime);
+  const pct = audio.duration ? (audio.currentTime/audio.duration*100) : 0;
+  progressFill.style.width=pct+'%';
+});
+progressBar.addEventListener('click',e=>{
+  if(!audio.duration) return;
+  const r=progressBar.getBoundingClientRect();
+  audio.currentTime = ((e.clientX-r.left)/r.width)*audio.duration;
+});
+
+draw();
+
+</script>
+</body>
+</html>
