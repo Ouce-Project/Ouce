@@ -161,13 +161,14 @@ h1:focus{background:rgba(255,255,255,0.06);}
 
   <div class="settings-panel" id="settingsPanel">
     <div class="settings-row"><span>Slowed</span><input type="range" id="slowedRange" min="0" max="1" step="0.01" value="0"><span id="slowedVal">0%</span></div>
+    <div class="settings-row"><span>Speed Up</span><input type="range" id="speedupRange" min="0" max="1" step="0.01" value="0"><span id="speedupVal">0%</span></div>
     <div class="settings-row"><span>Reverb</span><input type="range" id="reverbRange" min="0" max="1" step="0.01" value="0"><span id="reverbVal">0%</span></div>
   </div>
 
   <div class="empty-hint" id="hint">Carregue um áudio para começar a reprodução</div>
 </div>
 
-<div class="sig"><span class="by">Feito pelo xMqR <3</span></div>
+<div class="sig"><span class="by">Feito pelo</span><span class="name">xMqR</span><span class="by">&lt;3</span></div>
 
 <audio id="audio"></audio>
 
@@ -197,7 +198,7 @@ for(let i=0;i<7;i++){
   wrap.appendChild(b);
 }
 
-
+// waveform canvas — live equalizer reacting to the actual playing audio, eased for smooth motion
 const viz=document.getElementById('viz');
 const vctx=viz.getContext('2d');
 const BARS=56;
@@ -223,7 +224,7 @@ function roundRect(c,x,y,w,h,r){
   c.closePath();
 }
 
-
+// group FFT bins logarithmically so bass doesn't dominate and treble bars still move
 function computeBands(binCount){
   const bands=[];
   const minIndex=1, maxIndex=binCount-1;
@@ -256,10 +257,10 @@ function draw(){
       const [s,e]=bandBounds[i];
       let peak=0;
       for(let k=s;k<e;k++){ if(dataArray[k]>peak) peak=dataArray[k]; }
-      const tilt=0.9+(i/(BARS-1))*0.55; 
-      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; 
+      const tilt=0.9+(i/(BARS-1))*0.55; // mild boost for treble bars
+      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; // true-to-volume, no artificial lift on quiet audio
     }
-    smoothBars[i] += (targetH-smoothBars[i])*0.16; 
+    smoothBars[i] += (targetH-smoothBars[i])*0.16; // eased so it flows instead of flashing
     const barH=(smoothBars[i]/100)*h;
     const x=i*(barW+gap);
     const y=h-barH;
@@ -284,6 +285,8 @@ const settingsBtn=document.getElementById('settingsBtn');
 const settingsPanel=document.getElementById('settingsPanel');
 const slowedRange=document.getElementById('slowedRange');
 const slowedVal=document.getElementById('slowedVal');
+const speedupRange=document.getElementById('speedupRange');
+const speedupVal=document.getElementById('speedupVal');
 const reverbRange=document.getElementById('reverbRange');
 const reverbVal=document.getElementById('reverbVal');
 
@@ -330,9 +333,19 @@ settingsBtn.addEventListener('click', ()=>{
 slowedRange.addEventListener('input', ()=>{
   const t=parseFloat(slowedRange.value);
   slowedVal.textContent=Math.round(t*100)+'%';
+  if(t>0 && parseFloat(speedupRange.value)>0){ speedupRange.value=0; speedupVal.textContent='0%'; }
   audio.playbackRate = 1 - t*0.5;
   const drop = t>0.02;
   audio.preservesPitch=!drop; audio.mozPreservesPitch=!drop; audio.webkitPreservesPitch=!drop;
+});
+
+speedupRange.addEventListener('input', ()=>{
+  const t=parseFloat(speedupRange.value);
+  speedupVal.textContent=Math.round(t*100)+'%';
+  if(t>0 && parseFloat(slowedRange.value)>0){ slowedRange.value=0; slowedVal.textContent='0%'; }
+  audio.playbackRate = 1 + t*0.8;
+  const raise = t>0.02;
+  audio.preservesPitch=!raise; audio.mozPreservesPitch=!raise; audio.webkitPreservesPitch=!raise;
 });
 
 reverbRange.addEventListener('input', ()=>{
