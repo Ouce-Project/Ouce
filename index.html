@@ -98,6 +98,16 @@ h1:focus{background:rgba(255,255,255,0.06);}
 .settings-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--blue-soft);cursor:pointer;}
 .ctrl-btn.settings.active{background:rgba(3,34,239,0.28);border-color:rgba(3,34,239,0.6);}
 
+.download-btn{
+  display:none;width:100%;margin-top:12px;padding:11px;border-radius:14px;border:none;
+  background:linear-gradient(160deg,var(--blue-soft),var(--blue));color:#fff;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;
+  box-shadow:0 10px 24px -8px rgba(3,34,239,0.55);transition:opacity .2s,transform .15s;
+}
+.download-btn.show{display:block;}
+.download-btn:active{transform:scale(.98);}
+.download-btn:disabled{opacity:.6;cursor:wait;}
+
 .sig{
   position:fixed;right:18px;bottom:18px;display:flex;align-items:center;justify-content:center;
   opacity:0;transform:translateY(14px);
@@ -163,6 +173,8 @@ h1:focus{background:rgba(255,255,255,0.06);}
     <div class="settings-row"><span>Speed Up</span><input type="range" id="speedupRange" min="0" max="1" step="0.01" value="0"><span id="speedupVal">0%</span></div>
     <div class="settings-row"><span>Reverb</span><input type="range" id="reverbRange" min="0" max="1" step="0.01" value="0"><span id="reverbVal">0%</span></div>
   </div>
+
+  <button class="download-btn" id="downloadBtn">Baixar áudio</button>
 
   <div class="empty-hint" id="hint">Carregue um áudio para começar a reprodução</div>
 </div>
@@ -288,6 +300,8 @@ const speedupRange=document.getElementById('speedupRange');
 const speedupVal=document.getElementById('speedupVal');
 const reverbRange=document.getElementById('reverbRange');
 const reverbVal=document.getElementById('reverbVal');
+const downloadBtn=document.getElementById('downloadBtn');
+let currentFile=null;
 
 let audioCtx, source, analyser, dataArray, dryGain, wetGain, convolver;
 function fmt(t){ if(!isFinite(t))return '00:00'; const m=Math.floor(t/60),s=Math.floor(t%60); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
@@ -329,6 +343,11 @@ settingsBtn.addEventListener('click', ()=>{
   settingsBtn.classList.toggle('active');
 });
 
+function updateDownloadBtn(){
+  const modified = parseFloat(slowedRange.value)>0 || parseFloat(speedupRange.value)>0 || parseFloat(reverbRange.value)>0;
+  downloadBtn.classList.toggle('show', modified && !!currentFile);
+}
+
 slowedRange.addEventListener('input', ()=>{
   const t=parseFloat(slowedRange.value);
   slowedVal.textContent=Math.round(t*100)+'%';
@@ -336,6 +355,7 @@ slowedRange.addEventListener('input', ()=>{
   audio.playbackRate = 1 - t*0.5;
   const drop = t>0.02;
   audio.preservesPitch=!drop; audio.mozPreservesPitch=!drop; audio.webkitPreservesPitch=!drop;
+  updateDownloadBtn();
 });
 
 speedupRange.addEventListener('input', ()=>{
@@ -345,6 +365,7 @@ speedupRange.addEventListener('input', ()=>{
   audio.playbackRate = 1 + t*0.8;
   const raise = t>0.02;
   audio.preservesPitch=!raise; audio.mozPreservesPitch=!raise; audio.webkitPreservesPitch=!raise;
+  updateDownloadBtn();
 });
 
 reverbRange.addEventListener('input', ()=>{
@@ -353,11 +374,13 @@ reverbRange.addEventListener('input', ()=>{
   reverbVal.textContent=Math.round(t*100)+'%';
   wetGain.gain.setTargetAtTime(t*0.6, audioCtx.currentTime, 0.2);
   dryGain.gain.setTargetAtTime(1 - t*0.25, audioCtx.currentTime, 0.2);
+  updateDownloadBtn();
 });
 
 fileInput.addEventListener('change', e=>{
   const f=e.target.files[0];
   if(!f) return;
+  currentFile=f;
   const url=URL.createObjectURL(f);
   audio.src=url;
   hint.style.display='none';
@@ -365,6 +388,7 @@ fileInput.addEventListener('change', e=>{
   document.getElementById('title').textContent=name;
   setupAnalyser();
   audio.play().catch(()=>{});
+  updateDownloadBtn();
 });
 
 playBtn.addEventListener('click',()=>{
@@ -392,6 +416,74 @@ progressBar.addEventListener('click',e=>{
   if(!audio.duration) return;
   const r=progressBar.getBoundingClientRect();
   audio.currentTime = ((e.clientX-r.left)/r.width)*audio.duration;
+});
+
+function audioBufferToWav(buffer){
+  const numCh=buffer.numberOfChannels, len=buffer.length, sr=buffer.sampleRate;
+  const bytesPerSample=2, blockAlign=numCh*bytesPerSample;
+  const dataSize=len*blockAlign;
+  const bufOut=new ArrayBuffer(44+dataSize);
+  const view=new DataView(bufOut);
+  const writeStr=(o,s)=>{ for(let i=0;i<s.length;i++) view.setUint8(o+i,s.charCodeAt(i)); };
+  writeStr(0,'RIFF'); view.setUint32(4,36+dataSize,true); writeStr(8,'WAVE');
+  writeStr(12,'fmt '); view.setUint32(16,16,true); view.setUint16(20,1,true);
+  view.setUint16(22,numCh,true); view.setUint32(24,sr,true);
+  view.setUint32(28,sr*blockAlign,true); view.setUint16(32,blockAlign,true); view.setUint16(34,16,true);
+  writeStr(36,'data'); view.setUint32(40,dataSize,true);
+  const chans=[]; for(let c=0;c<numCh;c++) chans.push(buffer.getChannelData(c));
+  let off=44;
+  for(let i=0;i<len;i++){
+    for(let c=0;c<numCh;c++){
+      let s=Math.max(-1,Math.min(1,chans[c][i]));
+      view.setInt16(off, s<0? s*0x8000 : s*0x7fff, true);
+      off+=2;
+    }
+  }
+  return new Blob([bufOut],{type:'audio/wav'});
+}
+
+downloadBtn.addEventListener('click', async ()=>{
+  if(!currentFile || downloadBtn.disabled) return;
+  downloadBtn.disabled=true;
+  const original=downloadBtn.textContent;
+  downloadBtn.textContent='Preparando…';
+  try{
+    const arrBuf=await currentFile.arrayBuffer();
+    const decodeCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const original_buf=await decodeCtx.decodeAudioData(arrBuf);
+
+    const st=parseFloat(slowedRange.value), sp=parseFloat(speedupRange.value), rv=parseFloat(reverbRange.value);
+    const rate = st>0 ? (1-st*0.5) : (sp>0 ? (1+sp*0.8) : 1);
+    const outLength=Math.max(1,Math.ceil(original_buf.length/rate));
+    const offlineCtx=new OfflineAudioContext(original_buf.numberOfChannels, outLength, original_buf.sampleRate);
+
+    const src=offlineCtx.createBufferSource();
+    src.buffer=original_buf;
+    src.playbackRate.value=rate;
+
+    const dry=offlineCtx.createGain(); dry.gain.value=1-rv*0.25;
+    const wet=offlineCtx.createGain(); wet.gain.value=rv*0.6;
+    const convolver=offlineCtx.createConvolver();
+    convolver.buffer=makeReverbBuffer(offlineCtx, 2.8, 3.2);
+
+    src.connect(dry); dry.connect(offlineCtx.destination);
+    src.connect(convolver); convolver.connect(wet); wet.connect(offlineCtx.destination);
+    src.start(0);
+
+    const rendered=await offlineCtx.startRendering();
+    const wavBlob=audioBufferToWav(rendered);
+    const url=URL.createObjectURL(wavBlob);
+    const a=document.createElement('a');
+    const name=(document.getElementById('title').textContent||'audio').trim() || 'audio';
+    a.href=url; a.download=name+'.wav';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }catch(err){
+    alert('Não foi possível gerar o áudio modificado.');
+  }finally{
+    downloadBtn.disabled=false;
+    downloadBtn.textContent=original;
+  }
 });
 
 draw();
