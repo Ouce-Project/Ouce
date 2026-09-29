@@ -4,14 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ouve-me</title>
-<meta name="description" content="Ouve-me — o reprodutor de música 100% gratuito, sem anúncios e totalmente personalizável. Sua música, do seu jeito, sob seu controle.">
+<meta name="description" content="Ouve-me: o reprodutor de música 100% gratuito, sem anúncios e totalmente personalizável. Sua música, do seu jeito, sob seu controle.">
+
+<meta name="theme-color" content="#0322ef">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Ouve-me: sua música, do seu jeito">
 <meta property="og:description" content="Gratuito. Sem anúncios. Totalmente personalizável. Suba seu áudio, deixe do seu jeito e ouça no seu controle.">
 <meta property="og:image" content="capa.png">
 
-<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ouve-me: sua música, do seu jeito">
 <meta name="twitter:description" content="Gratuito. Sem anúncios. Totalmente personalizável. Suba seu áudio, deixe do seu jeito e ouça no seu controle.">
 <meta name="twitter:image" content="capa.png">
@@ -42,7 +44,7 @@ body{
   overflow-x:hidden;position:relative;padding:32px 16px;
 }
 
-/* liquid metaball background */
+
 .liquid-wrap{position:fixed;inset:0;z-index:0;filter:url(#goo);overflow:hidden;}
 .blob{position:absolute;border-radius:50%;animation:float linear infinite;}
 .blob.blue{background:radial-gradient(circle at 35% 30%, var(--blue-soft), var(--blue) 60%, transparent 80%);}
@@ -196,7 +198,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
 <audio id="audio"></audio>
 
 <script>
-// liquid metaball blobs
+
 const wrap=document.getElementById('liquidWrap');
 const palette=['blue','grey','blue','grey','blue','grey','blue'];
 for(let i=0;i<7;i++){
@@ -221,7 +223,7 @@ for(let i=0;i<7;i++){
   wrap.appendChild(b);
 }
 
-// waveform canvas — live equalizer reacting to the actual playing audio, eased for smooth motion
+
 const viz=document.getElementById('viz');
 const vctx=viz.getContext('2d');
 const BARS=56;
@@ -247,7 +249,7 @@ function roundRect(c,x,y,w,h,r){
   c.closePath();
 }
 
-// group FFT bins logarithmically so bass doesn't dominate and treble bars still move
+
 function computeBands(binCount){
   const bands=[];
   const minIndex=1, maxIndex=binCount-1;
@@ -280,10 +282,10 @@ function draw(){
       const [s,e]=bandBounds[i];
       let peak=0;
       for(let k=s;k<e;k++){ if(dataArray[k]>peak) peak=dataArray[k]; }
-      const tilt=0.9+(i/(BARS-1))*0.55; // mild boost for treble bars
-      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; // true-to-volume, no artificial lift on quiet audio
+      const tilt=0.9+(i/(BARS-1))*0.55; 
+      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; 
     }
-    smoothBars[i] += (targetH-smoothBars[i])*0.16; // eased so it flows instead of flashing
+    smoothBars[i] += (targetH-smoothBars[i])*0.16; 
     const barH=(smoothBars[i]/100)*h;
     const x=i*(barW+gap);
     const y=h-barH;
