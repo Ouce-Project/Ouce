@@ -31,7 +31,7 @@ body{
   overflow-x:hidden;position:relative;padding:32px 16px;
 }
 
-/* liquid metaball background */
+
 .liquid-wrap{position:fixed;inset:0;z-index:0;filter:url(#goo);overflow:hidden;}
 .blob{position:absolute;border-radius:50%;animation:float linear infinite;}
 .blob.blue{background:radial-gradient(circle at 35% 30%, var(--blue-soft), var(--blue) 60%, transparent 80%);}
@@ -184,7 +184,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
 <audio id="audio"></audio>
 
 <script>
-// liquid metaball blobs
+
 const wrap=document.getElementById('liquidWrap');
 const palette=['blue','grey','blue','grey','blue','grey','blue'];
 for(let i=0;i<7;i++){
@@ -209,7 +209,7 @@ for(let i=0;i<7;i++){
   wrap.appendChild(b);
 }
 
-// waveform canvas — live equalizer reacting to the actual playing audio, eased for smooth motion
+
 const viz=document.getElementById('viz');
 const vctx=viz.getContext('2d');
 const BARS=56;
@@ -235,7 +235,7 @@ function roundRect(c,x,y,w,h,r){
   c.closePath();
 }
 
-// group FFT bins logarithmically so bass doesn't dominate and treble bars still move
+
 function computeBands(binCount){
   const bands=[];
   const minIndex=1, maxIndex=binCount-1;
@@ -268,10 +268,10 @@ function draw(){
       const [s,e]=bandBounds[i];
       let peak=0;
       for(let k=s;k<e;k++){ if(dataArray[k]>peak) peak=dataArray[k]; }
-      const tilt=0.9+(i/(BARS-1))*0.55; // mild boost for treble bars
-      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; // true-to-volume, no artificial lift on quiet audio
+      const tilt=0.9+(i/(BARS-1))*0.55; 
+      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; 
     }
-    smoothBars[i] += (targetH-smoothBars[i])*0.16; // eased so it flows instead of flashing
+    smoothBars[i] += (targetH-smoothBars[i])*0.16; 
     const barH=(smoothBars[i]/100)*h;
     const x=i*(barW+gap);
     const y=h-barH;
