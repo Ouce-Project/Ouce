@@ -31,7 +31,7 @@ body{
   overflow-x:hidden;position:relative;padding:32px 16px;
 }
 
-
+/* liquid metaball background */
 .liquid-wrap{position:fixed;inset:0;z-index:0;filter:url(#goo);overflow:hidden;}
 .blob{position:absolute;border-radius:50%;animation:float linear infinite;}
 .blob.blue{background:radial-gradient(circle at 35% 30%, var(--blue-soft), var(--blue) 60%, transparent 80%);}
@@ -69,8 +69,9 @@ h1:focus{background:rgba(255,255,255,0.06);}
 
 .viz{width:100%;height:104px;margin-bottom:14px;display:block;border-radius:8px;}
 
-.progress-bar{position:relative;height:6px;border-radius:100px;background:rgba(255,255,255,0.1);cursor:pointer;overflow:hidden;}
+.progress-bar{position:relative;height:6px;border-radius:100px;background:rgba(255,255,255,0.1);cursor:pointer;touch-action:none;}
 .progress-fill{position:absolute;left:0;top:0;bottom:0;width:0%;background:linear-gradient(90deg,var(--blue),var(--blue-soft));border-radius:100px;}
+.progress-fill::after{content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.4);}
 .times{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px;font-variant-numeric:tabular-nums;}
 
 .controls{display:flex;align-items:center;justify-content:center;gap:16px;margin:18px 0 6px;}
@@ -184,7 +185,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
 <audio id="audio"></audio>
 
 <script>
-
+// liquid metaball blobs
 const wrap=document.getElementById('liquidWrap');
 const palette=['blue','grey','blue','grey','blue','grey','blue'];
 for(let i=0;i<7;i++){
@@ -209,7 +210,7 @@ for(let i=0;i<7;i++){
   wrap.appendChild(b);
 }
 
-
+// waveform canvas — live equalizer reacting to the actual playing audio, eased for smooth motion
 const viz=document.getElementById('viz');
 const vctx=viz.getContext('2d');
 const BARS=56;
@@ -235,7 +236,7 @@ function roundRect(c,x,y,w,h,r){
   c.closePath();
 }
 
-
+// group FFT bins logarithmically so bass doesn't dominate and treble bars still move
 function computeBands(binCount){
   const bands=[];
   const minIndex=1, maxIndex=binCount-1;
@@ -268,10 +269,10 @@ function draw(){
       const [s,e]=bandBounds[i];
       let peak=0;
       for(let k=s;k<e;k++){ if(dataArray[k]>peak) peak=dataArray[k]; }
-      const tilt=0.9+(i/(BARS-1))*0.55; 
-      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; 
+      const tilt=0.9+(i/(BARS-1))*0.55; // mild boost for treble bars
+      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; // true-to-volume, no artificial lift on quiet audio
     }
-    smoothBars[i] += (targetH-smoothBars[i])*0.16; 
+    smoothBars[i] += (targetH-smoothBars[i])*0.16; // eased so it flows instead of flashing
     const barH=(smoothBars[i]/100)*h;
     const x=i*(barW+gap);
     const y=h-barH;
@@ -412,11 +413,27 @@ audio.addEventListener('timeupdate',()=>{
   const pct = audio.duration ? (audio.currentTime/audio.duration*100) : 0;
   progressFill.style.width=pct+'%';
 });
-progressBar.addEventListener('click',e=>{
+function scrubTo(clientX){
   if(!audio.duration) return;
   const r=progressBar.getBoundingClientRect();
-  audio.currentTime = ((e.clientX-r.left)/r.width)*audio.duration;
+  const frac=Math.min(1,Math.max(0,(clientX-r.left)/r.width));
+  audio.currentTime=frac*audio.duration;
+  progressFill.style.width=(frac*100)+'%';
+  curTime.textContent=fmt(audio.currentTime);
+}
+let dragging=false;
+progressBar.addEventListener('pointerdown',e=>{
+  dragging=true;
+  progressBar.setPointerCapture(e.pointerId);
+  scrubTo(e.clientX);
 });
+progressBar.addEventListener('pointermove',e=>{
+  if(dragging) scrubTo(e.clientX);
+});
+progressBar.addEventListener('pointerup',e=>{
+  dragging=false;
+});
+progressBar.addEventListener('pointercancel',()=>{ dragging=false; });
 
 function audioBufferToWav(buffer){
   const numCh=buffer.numberOfChannels, len=buffer.length, sr=buffer.sampleRate;
