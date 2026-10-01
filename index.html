@@ -10,12 +10,12 @@
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Ouça-me: sua música, do seu jeito">
-<meta property="og:description" content="Gratuito. Sem anúncios. Totalmente personalizável. Suba seu áudio, deixe do seu jeito e ouça no seu controle.">
+<meta property="og:description" content=" Gratuito. Sem anúncios. Totalmente personalizável. Suba seu áudio, deixe do seu jeito e ouça no seu controle.">
 <meta property="og:image" content="capa.png">
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ouça-me: sua música, do seu jeito">
-<meta name="twitter:description" content="Gratuito. Sem anúncios. Totalmente personalizável. Suba seu áudio, deixe do seu jeito e ouça no seu controle.">
+<meta name="twitter:description" content=" Gratuito. Sem anúncios. Totalmente personalizável. Suba seu áudio, deixe do seu jeito e ouça no seu controle.">
 <meta name="twitter:image" content="capa.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Alex+Brush&display=swap" rel="stylesheet">
@@ -45,6 +45,24 @@ body{
 }
 
 
+.splash{
+  position:fixed;inset:0;z-index:50;background:rgba(5,6,10,0.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  transition:opacity .8s ease, visibility .8s ease;
+}
+.splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
+.splash-logo{width:56px;height:auto;opacity:0;transform:scale(.7);animation:logoIn .7s ease forwards .15s;position:relative;z-index:1;}
+@keyframes logoIn{to{opacity:1;transform:scale(1);}}
+.splash-text{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:21px;color:var(--white);letter-spacing:.02em;min-height:26px;display:flex;align-items:center;position:relative;z-index:1;}
+.type-cursor{display:inline-block;width:2px;height:20px;background:var(--white);margin-left:3px;animation:blink .8s steps(1) infinite;}
+@keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+.splash-sub{
+  font-family:'Inter',sans-serif;font-weight:300;font-size:11px;letter-spacing:.35em;
+  color:var(--dim);position:relative;z-index:1;padding-left:.35em;
+  opacity:0;transition:opacity .6s ease;
+}
+.splash-sub.show{opacity:1;}
+
 .liquid-wrap{position:fixed;inset:0;z-index:0;filter:url(#goo);overflow:hidden;}
 .blob{position:absolute;border-radius:50%;animation:float linear infinite;}
 .blob.blue{background:radial-gradient(circle at 35% 30%, var(--blue-soft), var(--blue) 60%, transparent 80%);}
@@ -66,7 +84,10 @@ body{
   backdrop-filter:blur(26px) saturate(150%);
   -webkit-backdrop-filter:blur(26px) saturate(150%);
   box-shadow:0 30px 60px -20px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.12) inset;
+  opacity:0;transform:translateY(26px);
+  transition:opacity .8s ease, transform .8s cubic-bezier(.19,1,.22,1);
 }
+.card.show{opacity:1;transform:translateY(0);}
 
 .top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
 .tag{font-size:11px;letter-spacing:.03em;color:var(--dim);background:var(--glass);border:1px solid var(--glass-border);padding:5px 10px;border-radius:100px;}
@@ -125,7 +146,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
 .sig{
   position:fixed;right:18px;bottom:18px;display:flex;align-items:center;justify-content:center;
   opacity:0;transform:translateY(14px);
-  animation:sigIn .6s ease forwards 1.4s;
+  animation:sigIn .6s ease forwards 3.2s;
   z-index:2;
 }
 .sig .by{font-family:'Inter',sans-serif;font-size:12px;color:var(--white);opacity:.85;}
@@ -143,6 +164,12 @@ h1:focus{background:rgba(255,255,255,0.06);}
     <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="goo"/>
   </filter>
 </svg>
+
+<div class="splash" id="splash">
+  <img class="splash-logo" src="data:image/png;base64,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" alt="logo">
+  <div class="splash-text"><span id="typeText"></span><span class="type-cursor"></span></div>
+  <div class="splash-sub" id="splashSub">by xMqR</div>
+</div>
 
 <div class="liquid-wrap" id="liquidWrap"></div>
 
@@ -198,7 +225,28 @@ h1:focus{background:rgba(255,255,255,0.06);}
 <audio id="audio"></audio>
 
 <script>
+// intro splash: blinking lights + typewriter, then reveal
+(function(){
+  const typeText=document.getElementById('typeText');
+  const word='Ouça-me';
+  let i=0;
+  function typeNext(){
+    if(i<word.length){
+      typeText.textContent+=word[i]; i++;
+      setTimeout(typeNext, 170);
+    } else {
+      document.getElementById('splashSub').classList.add('show');
+      setTimeout(finishSplash, 1000);
+    }
+  }
+  function finishSplash(){
+    document.getElementById('splash').classList.add('hide');
+    document.querySelector('.card').classList.add('show');
+  }
+  setTimeout(typeNext, 500);
+})();
 
+// liquid metaball blobs
 const wrap=document.getElementById('liquidWrap');
 const palette=['blue','grey','blue','grey','blue','grey','blue'];
 for(let i=0;i<7;i++){
@@ -223,7 +271,7 @@ for(let i=0;i<7;i++){
   wrap.appendChild(b);
 }
 
-
+// waveform canvas — live equalizer reacting to the actual playing audio, eased for smooth motion
 const viz=document.getElementById('viz');
 const vctx=viz.getContext('2d');
 const BARS=56;
@@ -249,7 +297,7 @@ function roundRect(c,x,y,w,h,r){
   c.closePath();
 }
 
-
+// group FFT bins logarithmically so bass doesn't dominate and treble bars still move
 function computeBands(binCount){
   const bands=[];
   const minIndex=1, maxIndex=binCount-1;
@@ -282,10 +330,10 @@ function draw(){
       const [s,e]=bandBounds[i];
       let peak=0;
       for(let k=s;k<e;k++){ if(dataArray[k]>peak) peak=dataArray[k]; }
-      const tilt=0.9+(i/(BARS-1))*0.55; 
-      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; 
+      const tilt=0.9+(i/(BARS-1))*0.55; // mild boost for treble bars
+      targetH = 6 + Math.min(1, (peak/255)*tilt)*82; // true-to-volume, no artificial lift on quiet audio
     }
-    smoothBars[i] += (targetH-smoothBars[i])*0.16; 
+    smoothBars[i] += (targetH-smoothBars[i])*0.16; // eased so it flows instead of flashing
     const barH=(smoothBars[i]/100)*h;
     const x=i*(barW+gap);
     const y=h-barH;
