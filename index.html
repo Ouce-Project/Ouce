@@ -18,8 +18,9 @@
 <meta name="twitter:title" content="Ouce: sua música, do seu jeito">
 <meta name="twitter:description" content="Gratuito. Sem anúncios. Totalmente personalizável. Suba seu áudio, deixe do seu jeito e ouça no seu controle.">
 <meta name="twitter:image" content="capa.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Alex+Brush&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#111113;
@@ -112,6 +113,104 @@ body{
 .card.record-mode #muteBtn{display:none;}
 .card.record-mode .controls{justify-content:center;}
 
+.auth-widget{
+  position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:calc(18px + env(safe-area-inset-left,0px));
+  z-index:12;opacity:0;transform:translateY(-10px);pointer-events:none;
+  transition:opacity .8s ease, transform .8s cubic-bezier(.19,1,.22,1);
+}
+.auth-widget.show{opacity:1;transform:translateY(0);pointer-events:auto;}
+.auth-widget.rm-hidden{opacity:0 !important;transform:translateY(-10px) !important;pointer-events:none !important;}
+
+#authButtons{display:flex;align-items:center;gap:14px;}
+.auth-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:12.5px;
+  color:var(--dim);background:none;border:none;padding:4px 2px;cursor:pointer;
+  transition:color .2s;
+}
+.auth-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;flex-shrink:0;}
+.auth-btn:hover{color:var(--white);}
+.auth-btn.primary{
+  color:var(--white);font-weight:600;
+  background:var(--blue);padding:8px 16px;border-radius:9px;
+  box-shadow:0 4px 14px -5px rgba(3,34,239,0.6);
+}
+.auth-btn.primary:hover{background:var(--blue-soft);box-shadow:0 6px 18px -4px rgba(3,34,239,0.75);color:var(--white);}
+
+.auth-form,.user-dropdown{
+  position:absolute;top:calc(100% + 14px);left:0;z-index:6;width:268px;
+  background:linear-gradient(155deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+  border:1px solid var(--glass-border);border-radius:22px;padding:22px;
+  backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+  box-shadow:0 30px 60px -18px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.14) inset, 0 0 34px -12px rgba(3,34,239,0.4);
+  opacity:0;transform:translateY(-8px) scale(.97);pointer-events:none;
+  transition:opacity .3s ease, transform .35s cubic-bezier(.19,1,.22,1);
+}
+.auth-form.open,.user-dropdown.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+
+.auth-tabs{display:flex;gap:6px;margin-bottom:20px;background:rgba(255,255,255,0.04);padding:4px;border-radius:13px;}
+.auth-tab{flex:1;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;padding:9px;border-radius:10px;border:none;background:transparent;color:var(--dim);cursor:pointer;transition:background .25s,color .25s;}
+.auth-tab.active{background:var(--blue);color:#fff;}
+
+.auth-field{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:13px;padding:11px 13px;margin-bottom:12px;transition:border-color .25s,box-shadow .25s;}
+.auth-field:focus-within{border-color:rgba(3,34,239,0.6);box-shadow:0 0 0 3px rgba(3,34,239,0.16);}
+.auth-field svg{width:15px;height:15px;stroke:var(--dim);fill:none;flex-shrink:0;}
+.auth-field input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--white);font-family:'Inter',sans-serif;font-size:13px;}
+.auth-field input::placeholder{color:var(--dim);}
+
+.auth-error{font-size:11px;color:#ff7a7a;min-height:14px;margin-bottom:4px;}
+.auth-submit{
+  width:100%;padding:12px;border-radius:13px;border:none;margin-top:6px;
+  background:linear-gradient(155deg,var(--blue-soft),var(--blue));color:#fff;
+  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:pointer;
+  box-shadow:0 12px 28px -8px rgba(3,34,239,0.7);
+  transition:transform .15s, box-shadow .25s;
+}
+.auth-submit:hover{box-shadow:0 14px 34px -6px rgba(3,34,239,0.9);transform:translateY(-1px);}
+.auth-submit:active{transform:scale(.98);}
+.auth-hint{font-size:10px;color:var(--dim);margin-top:14px;text-align:center;letter-spacing:.02em;}
+
+.user-chip{
+  display:flex;align-items:center;gap:9px;
+  background:linear-gradient(155deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+  border:1px solid var(--glass-border);padding:6px 16px 6px 6px;border-radius:100px;
+  backdrop-filter:blur(16px) saturate(160%);color:var(--white);font-size:12px;cursor:pointer;max-width:200px;
+  box-shadow:0 6px 18px -8px rgba(0,0,0,0.6);transition:box-shadow .25s,border-color .25s;
+}
+.user-chip:hover{background:rgba(255,255,255,0.14);}
+.user-avatar{
+  width:27px;height:27px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(155deg,var(--blue-soft),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 12px -1px rgba(3,34,239,0.8);
+}
+.user-avatar svg{width:14px;height:14px;stroke:#fff;fill:none;}
+.user-chip span{font-family:'Space Grotesk',sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.user-chip .chev{margin-left:2px;transition:transform .3s;flex-shrink:0;stroke:var(--dim);}
+.user-chip.open .chev{transform:rotate(180deg);}
+
+.dropdown-section-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--white);margin:20px 0 8px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.08);}
+.dropdown-section-title:first-child{margin-top:0;padding-top:0;border-top:none;}
+
+.dropdown-item{position:relative;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:9px 4px 9px 13px;cursor:pointer;color:var(--white);transition:color .2s;}
+.dropdown-item::before{content:'';position:absolute;left:0;top:3px;bottom:3px;width:2px;border-radius:2px;background:transparent;transition:background .2s;}
+.dropdown-item:hover{color:var(--blue-soft);}
+.dropdown-item:hover::before{background:var(--blue-soft);}
+.dropdown-item .count{color:var(--dim);font-size:10px;}
+
+.dropdown-action{display:flex;align-items:center;gap:7px;width:100%;text-align:left;font-family:'Inter',sans-serif;font-size:12px;color:var(--blue-soft);background:none;border:none;padding:8px 4px;cursor:pointer;transition:color .2s;}
+.dropdown-action svg{width:13px;height:13px;stroke:currentColor;fill:none;flex-shrink:0;}
+.dropdown-action:hover{color:var(--white);}
+.dropdown-action.logout{color:#ff8a8a;margin-top:10px;border-top:1px solid rgba(255,255,255,0.08);padding-top:16px;}
+.dropdown-action.logout:hover{color:#ffb3b3;}
+
+.playlist-tracks{padding-left:10px;margin-bottom:6px;}
+.track-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--dim);padding:6px 4px;}
+.track-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;font-family:'Inter',sans-serif;}
+.track-row button{background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px;line-height:1;padding:3px 7px;border-radius:7px;transition:background .2s,color .2s;}
+.track-row button:hover{background:rgba(255,255,255,0.08);color:var(--white);}
+.empty-list{font-size:11px;color:var(--dim);padding:8px 4px;font-style:italic;}
+
 .collapse{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .5s cubic-bezier(.19,1,.22,1), opacity .35s ease;}
 .collapse.open{grid-template-rows:1fr;opacity:1;}
 .collapse-inner{overflow:hidden;min-height:0;}
@@ -122,8 +221,7 @@ body{
 .upload-btn svg{width:14px;height:14px;}
 input[type=file]{display:none;}
 
-h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;margin:2px 0 2px;outline:none;cursor:text;border-radius:8px;padding:2px 4px;transition:background .2s, margin-top .5s cubic-bezier(.19,1,.22,1);}
-.card.record-mode h1{margin-top:44px;}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:25px;margin:36px 0 2px;outline:none;cursor:text;border-radius:8px;padding:2px 4px;transition:background .2s;}
 h1:focus{background:rgba(255,255,255,0.06);}
 .artist{color:var(--dim);font-size:13px;margin-bottom:18px;outline:none;cursor:text;border-radius:6px;padding:1px 3px;}
 .artist:focus{background:rgba(255,255,255,0.06);}
@@ -158,6 +256,8 @@ h1:focus{background:rgba(255,255,255,0.06);}
 .settings-row span:last-child{width:38px;text-align:right;font-variant-numeric:tabular-nums;flex-shrink:0;}
 .settings-row input[type=range]{flex:1;-webkit-appearance:none;height:3px;background:rgba(255,255,255,0.15);border-radius:10px;}
 .settings-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--blue-soft);cursor:pointer;}
+.settings-row select{flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.05);color:var(--white);font-size:12px;font-family:'Inter',sans-serif;}
+.settings-row select option{background:#1b1c1f;color:var(--white);}
 .ctrl-btn.settings.active{background:rgba(3,34,239,0.28);border-color:rgba(3,34,239,0.6);}
 
 .download-btn{
@@ -177,7 +277,6 @@ h1:focus{background:rgba(255,255,255,0.06);}
   z-index:2;
 }
 .sig .by{font-family:'Inter',sans-serif;font-size:12px;color:var(--white);opacity:.85;}
-.sig .name{font-family:'Alex Brush',cursive;font-size:24px;color:var(--white);line-height:1;}
 .sig-img{height:34px;width:auto;display:block;filter:brightness(0) invert(1);}
 @keyframes sigIn{to{opacity:1;transform:translateY(0);}}
 @keyframes sigPulse{0%,100%{box-shadow:0 10px 30px -10px rgba(0,0,0,0.6);}50%{box-shadow:0 10px 34px -6px rgba(3,34,239,0.5);}}
@@ -199,6 +298,57 @@ h1:focus{background:rgba(255,255,255,0.06);}
 </div>
 
 <div class="liquid-wrap" id="liquidWrap"></div>
+
+<div class="auth-widget" id="authWidget">
+  <div id="authButtons">
+    <button class="auth-btn" id="showLoginBtn">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10,17 15,12 10,7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      <span>Login</span>
+    </button>
+    <button class="auth-btn primary" id="showSignupBtn">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+      <span>Cadastro</span>
+    </button>
+  </div>
+  <div class="auth-form" id="authForm">
+    <div class="auth-tabs">
+      <button class="auth-tab" id="tabLogin" data-mode="login">Login</button>
+      <button class="auth-tab" id="tabSignup" data-mode="signup">Cadastro</button>
+    </div>
+    <div class="auth-field">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+      <input type="email" id="authEmail" placeholder="email@exemplo.com" autocomplete="off">
+    </div>
+    <div class="auth-field">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <input type="password" id="authPass" placeholder="senha" autocomplete="off">
+    </div>
+    <div class="auth-error" id="authError"></div>
+    <button class="auth-submit" id="authSubmit">Entrar</button>
+    <div class="auth-hint">Fica salvo só neste navegador.</div>
+  </div>
+  <div id="userChipWrap" style="display:none;">
+    <button class="user-chip" id="userChip">
+      <span class="user-avatar"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+      <span id="userEmailLabel"></span>
+      <svg class="chev" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="6,9 12,15 18,9"/></svg>
+    </button>
+    <div class="user-dropdown" id="userDropdown">
+      <div class="dropdown-section-title">Playlists</div>
+      <div id="playlistList"></div>
+      <button class="dropdown-action" id="newPlaylistBtn">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova playlist
+      </button>
+      <div class="dropdown-section-title">Histórico</div>
+      <div id="historyList"></div>
+      <button class="dropdown-action logout" id="logoutBtn">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="card">
   <button class="ouce-toggle disabled" id="tagBtn" title="Clique para entrar no modo gravação">Ouce</button>
@@ -245,6 +395,12 @@ h1:focus{background:rgba(255,255,255,0.06);}
     <div class="settings-row"><span>Slowed</span><input type="range" id="slowedRange" min="0" max="1" step="0.01" value="0"><span id="slowedVal">0%</span></div>
     <div class="settings-row"><span>Speed Up</span><input type="range" id="speedupRange" min="0" max="1" step="0.01" value="0"><span id="speedupVal">0%</span></div>
     <div class="settings-row"><span>Reverb</span><input type="range" id="reverbRange" min="0" max="1" step="0.01" value="0"><span id="reverbVal">0%</span></div>
+    <div class="settings-row" id="addToPlaylistRow" style="display:none;">
+      <span>Playlist</span>
+      <select id="addToPlaylistSelect">
+        <option value="">Adicionar em...</option>
+      </select>
+    </div>
   </div>
 
   <button class="download-btn" id="downloadBtn">Baixar áudio</button>
@@ -278,6 +434,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
     clearInterval(statusTimer);
     document.getElementById('splash').classList.add('hide');
     document.querySelector('.card').classList.add('show');
+    document.getElementById('authWidget').classList.add('show');
   }
 
   setTimeout(()=>{ sub.classList.add('show'); }, 450);
@@ -412,6 +569,7 @@ const collapseViz=document.getElementById('collapseViz');
 const collapseRest=document.getElementById('collapseRest');
 let currentFile=null;
 let recordMode=false;
+let currentHistoryId=null;
 
 tagBtn.addEventListener('click', ()=>{
   if(!currentFile) return;
@@ -419,7 +577,262 @@ tagBtn.addEventListener('click', ()=>{
   cardEl.classList.toggle('record-mode', recordMode);
   collapseUpload.classList.toggle('open', !recordMode);
   collapseRest.classList.toggle('open', !recordMode);
+  document.getElementById('authWidget').classList.toggle('rm-hidden', recordMode);
 });
+
+// ---------- Supabase (real account, works across devices) ----------
+const SUPABASE_URL='https://ubvuclfiyzrrcqrxarty.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVidnVjbGZpeXpycmNxcnhhcnR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNTE4MDksImV4cCI6MjEwNjcyNzgwOX0.nYTmLJbe6rU9efAEKi7OmmaJ1pPIPT1qvI9Q_pol7m4';
+const sb=window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const authWidget=document.getElementById('authWidget');
+const showLoginBtn=document.getElementById('showLoginBtn');
+const showSignupBtn=document.getElementById('showSignupBtn');
+const authButtons=document.getElementById('authButtons');
+const authForm=document.getElementById('authForm');
+const tabLogin=document.getElementById('tabLogin');
+const tabSignup=document.getElementById('tabSignup');
+const authEmail=document.getElementById('authEmail');
+const authPass=document.getElementById('authPass');
+const authError=document.getElementById('authError');
+const authSubmit=document.getElementById('authSubmit');
+const userChipWrap=document.getElementById('userChipWrap');
+const userChip=document.getElementById('userChip');
+const userDropdown=document.getElementById('userDropdown');
+const userEmailLabel=document.getElementById('userEmailLabel');
+const playlistList=document.getElementById('playlistList');
+const historyList=document.getElementById('historyList');
+const newPlaylistBtn=document.getElementById('newPlaylistBtn');
+const logoutBtn=document.getElementById('logoutBtn');
+const addToPlaylistRow=document.getElementById('addToPlaylistRow');
+const addToPlaylistSelect=document.getElementById('addToPlaylistSelect');
+
+let authMode='login';
+let currentUser=null;
+
+function setAuthMode(mode){
+  authMode=mode;
+  tabLogin.classList.toggle('active', mode==='login');
+  tabSignup.classList.toggle('active', mode==='signup');
+  authSubmit.textContent = mode==='login' ? 'Entrar' : 'Criar conta';
+  authError.textContent='';
+}
+function openAuthForm(mode){
+  authButtons.style.display='none';
+  authForm.classList.add('open');
+  setAuthMode(mode);
+  setTimeout(()=>authEmail.focus(), 50);
+}
+showLoginBtn.addEventListener('click', ()=>openAuthForm('login'));
+showSignupBtn.addEventListener('click', ()=>openAuthForm('signup'));
+tabLogin.addEventListener('click', ()=>setAuthMode('login'));
+tabSignup.addEventListener('click', ()=>setAuthMode('signup'));
+
+authSubmit.addEventListener('click', async ()=>{
+  const email=authEmail.value.trim().toLowerCase();
+  const pass=authPass.value;
+  if(!email || !email.includes('@')){ authError.textContent='Email inválido.'; return; }
+  if(!pass || pass.length<6){ authError.textContent='Senha muito curta (mín. 6).'; return; }
+  authSubmit.disabled=true;
+  const original=authSubmit.textContent;
+  authSubmit.textContent='Um instante…';
+  let result;
+  if(authMode==='signup'){
+    result=await sb.auth.signUp({email, password:pass});
+  } else {
+    result=await sb.auth.signInWithPassword({email, password:pass});
+  }
+  authSubmit.disabled=false;
+  authSubmit.textContent=original;
+  if(result.error){ authError.textContent=result.error.message; return; }
+  if(authMode==='signup' && !result.data.session){
+    authError.textContent='Conta criada! Confirme seu email antes de entrar.';
+    return;
+  }
+  authEmail.value=''; authPass.value='';
+  // enterLoggedInState runs automatically via onAuthStateChange below
+});
+
+async function enterLoggedInState(email){
+  currentUser=email;
+  authButtons.style.display='none';
+  authForm.classList.remove('open');
+  userChipWrap.style.display='';
+  userEmailLabel.textContent=email;
+  addToPlaylistRow.style.display = currentFile ? 'flex' : 'none';
+  await refreshPlaylists();
+  await refreshHistory();
+}
+function exitLoggedInState(){
+  currentUser=null;
+  userChipWrap.style.display='none';
+  userDropdown.classList.remove('open');
+  userChip.classList.remove('open');
+  addToPlaylistRow.style.display='none';
+  authButtons.style.display='';
+}
+
+sb.auth.onAuthStateChange((event, session)=>{
+  if(session && session.user){ enterLoggedInState(session.user.email); }
+  else { exitLoggedInState(); }
+});
+
+userChip.addEventListener('click', ()=>{
+  userDropdown.classList.toggle('open');
+  userChip.classList.toggle('open');
+});
+logoutBtn.addEventListener('click', ()=>sb.auth.signOut());
+
+document.addEventListener('click', e=>{
+  if(!authWidget.contains(e.target)){
+    authForm.classList.remove('open');
+    if(!currentUser) authButtons.style.display='';
+    userDropdown.classList.remove('open');
+    userChip.classList.remove('open');
+  }
+});
+
+let historyCache=[];
+
+async function refreshPlaylists(){
+  if(!currentUser) return;
+  const {data:lists, error}=await sb.from('playlists').select('*').order('created_at',{ascending:false});
+  if(error){ console.error(error); return; }
+  playlistList.innerHTML='';
+  addToPlaylistSelect.innerHTML='<option value="">Adicionar em...</option>';
+  if(!lists.length){ playlistList.innerHTML='<div class="empty-list">Nenhuma playlist ainda.</div>'; }
+  lists.forEach(pl=>{
+    const row=document.createElement('div');
+    row.className='dropdown-item';
+    const n=(pl.track_ids||[]).length;
+    row.innerHTML=`<span>${pl.name}</span><span class="count">${n} faixa${n!==1?'s':''}</span>`;
+    row.addEventListener('click', ()=>togglePlaylistTracks(row, pl));
+    playlistList.appendChild(row);
+    const opt=document.createElement('option');
+    opt.value=pl.id; opt.textContent=pl.name;
+    addToPlaylistSelect.appendChild(opt);
+  });
+  const newOpt=document.createElement('option');
+  newOpt.value='__new__'; newOpt.textContent='+ Criar nova playlist';
+  addToPlaylistSelect.appendChild(newOpt);
+}
+
+function togglePlaylistTracks(row, pl){
+  const existing=row.nextElementSibling;
+  if(existing && existing.classList.contains('playlist-tracks')){ existing.remove(); return; }
+  const wrap=document.createElement('div');
+  wrap.className='playlist-tracks';
+  const ids=pl.track_ids||[];
+  if(!ids.length){ wrap.innerHTML='<div class="empty-list">Vazia.</div>'; }
+  ids.forEach(hid=>{
+    const h=historyCache.find(x=>x.id===hid);
+    const tr=document.createElement('div');
+    tr.className='track-row';
+    tr.innerHTML=`<span>${h?h.title:'(removida)'}</span><button title="Tocar">▶</button><button title="Remover">×</button>`;
+    const [playBtnEl,removeBtnEl]=tr.querySelectorAll('button');
+    playBtnEl.addEventListener('click', async ev=>{ ev.stopPropagation(); if(h) await loadTrackIntoPlayer(h); });
+    removeBtnEl.addEventListener('click', async ev=>{
+      ev.stopPropagation();
+      const newIds=ids.filter(x=>x!==hid);
+      await sb.from('playlists').update({track_ids:newIds}).eq('id', pl.id);
+      pl.track_ids=newIds;
+      refreshPlaylists();
+    });
+    wrap.appendChild(tr);
+  });
+  row.after(wrap);
+}
+
+newPlaylistBtn.addEventListener('click', async ()=>{
+  const name=prompt('Nome da playlist:');
+  if(!name) return;
+  await sb.from('playlists').insert({name, track_ids:[]});
+  refreshPlaylists();
+});
+
+addToPlaylistSelect.addEventListener('change', async ()=>{
+  const val=addToPlaylistSelect.value;
+  if(!val || !currentHistoryId) { addToPlaylistSelect.value=''; return; }
+  let playlistId=val;
+  if(val==='__new__'){
+    const name=prompt('Nome da nova playlist:');
+    if(!name){ addToPlaylistSelect.value=''; return; }
+    const {data}=await sb.from('playlists').insert({name, track_ids:[currentHistoryId]}).select().single();
+    playlistId=data.id;
+  } else {
+    const {data:pl}=await sb.from('playlists').select('track_ids').eq('id', val).single();
+    const ids=[...(pl.track_ids||[]), currentHistoryId];
+    await sb.from('playlists').update({track_ids:ids}).eq('id', val);
+  }
+  await refreshPlaylists();
+  const original=addToPlaylistSelect.options[0].textContent;
+  addToPlaylistSelect.options[0].textContent='Adicionado ✓';
+  setTimeout(()=>{ addToPlaylistSelect.options[0].textContent=original; addToPlaylistSelect.value=''; },1200);
+});
+
+async function refreshHistory(){
+  if(!currentUser) return;
+  const {data:items, error}=await sb.from('history').select('*').order('created_at',{ascending:false}).limit(30);
+  if(error){ console.error(error); return; }
+  historyCache=items;
+  historyList.innerHTML='';
+  if(!items.length){ historyList.innerHTML='<div class="empty-list">Nada no histórico ainda.</div>'; return; }
+  items.forEach(item=>{
+    const row=document.createElement('div');
+    row.className='dropdown-item';
+    row.innerHTML=`<span>${item.title}</span>`;
+    row.addEventListener('click', ()=>loadTrackIntoPlayer(item));
+    historyList.appendChild(row);
+  });
+}
+
+async function loadTrackIntoPlayer(item){
+  const {data:blob, error}=await sb.storage.from('audio').download(item.storage_path);
+  if(error){ alert('Não consegui baixar esse áudio.'); return; }
+  currentFile=blob;
+  currentHistoryId=item.id;
+  const url=URL.createObjectURL(blob);
+  audio.src=url;
+  hint.style.display='none';
+  document.getElementById('title').textContent=item.title;
+  document.getElementById('artist').textContent=item.artist||'';
+  setupAnalyser();
+  audio.play().catch(()=>{});
+  tagBtn.classList.remove('disabled');
+  const s=item.settings||{};
+  slowedRange.value=s.slowed||0; slowedRange.dispatchEvent(new Event('input'));
+  speedupRange.value=s.speedup||0; speedupRange.dispatchEvent(new Event('input'));
+  reverbRange.value=s.reverb||0; reverbRange.dispatchEvent(new Event('input'));
+  if(currentUser) addToPlaylistRow.style.display='flex';
+  userDropdown.classList.remove('open'); userChip.classList.remove('open');
+}
+
+async function saveToHistory(){
+  if(!currentUser || !currentFile) return;
+  const title=document.getElementById('title').textContent;
+  const artist=document.getElementById('artist').textContent;
+  const settings={slowed:slowedRange.value, speedup:speedupRange.value, reverb:reverbRange.value};
+
+  if(currentHistoryId){
+    await sb.from('history').update({title, artist, settings}).eq('id', currentHistoryId);
+    refreshHistory();
+    return;
+  }
+  const {data:{user}}=await sb.auth.getUser();
+  const path=`${user.id}/${Date.now()}-${(currentFile.name||'audio').replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+  const {error:upErr}=await sb.storage.from('audio').upload(path, currentFile);
+  if(upErr){ console.error(upErr); return; }
+  const {data, error}=await sb.from('history').insert({title, artist, storage_path:path, settings}).select().single();
+  if(error){ console.error(error); return; }
+  currentHistoryId=data.id;
+  refreshHistory();
+}
+
+// restore session on load (Supabase persists it in localStorage automatically)
+(async function(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session && session.user) enterLoggedInState(session.user.email);
+})();
 
 let audioCtx, source, analyser, dataArray, dryGain, wetGain, convolver;
 function fmt(t){ if(!isFinite(t))return '00:00'; const m=Math.floor(t/60),s=Math.floor(t%60); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); }
@@ -466,6 +879,13 @@ function updateDownloadBtn(){
   downloadBtn.classList.toggle('show', modified && !!currentFile);
 }
 
+let historySaveTimer=null;
+function queueHistorySave(){
+  if(!currentUser || !currentFile) return;
+  clearTimeout(historySaveTimer);
+  historySaveTimer=setTimeout(saveToHistory, 900);
+}
+
 slowedRange.addEventListener('input', ()=>{
   const t=parseFloat(slowedRange.value);
   slowedVal.textContent=Math.round(t*100)+'%';
@@ -474,6 +894,7 @@ slowedRange.addEventListener('input', ()=>{
   const drop = t>0.02;
   audio.preservesPitch=!drop; audio.mozPreservesPitch=!drop; audio.webkitPreservesPitch=!drop;
   updateDownloadBtn();
+  queueHistorySave();
 });
 
 speedupRange.addEventListener('input', ()=>{
@@ -484,6 +905,7 @@ speedupRange.addEventListener('input', ()=>{
   const raise = t>0.02;
   audio.preservesPitch=!raise; audio.mozPreservesPitch=!raise; audio.webkitPreservesPitch=!raise;
   updateDownloadBtn();
+  queueHistorySave();
 });
 
 reverbRange.addEventListener('input', ()=>{
@@ -493,12 +915,17 @@ reverbRange.addEventListener('input', ()=>{
   wetGain.gain.setTargetAtTime(t*0.6, audioCtx.currentTime, 0.2);
   dryGain.gain.setTargetAtTime(1 - t*0.25, audioCtx.currentTime, 0.2);
   updateDownloadBtn();
+  queueHistorySave();
 });
+
+document.getElementById('title').addEventListener('blur', queueHistorySave);
+document.getElementById('artist').addEventListener('blur', queueHistorySave);
 
 fileInput.addEventListener('change', e=>{
   const f=e.target.files[0];
   if(!f) return;
   currentFile=f;
+  currentHistoryId=null;
   const url=URL.createObjectURL(f);
   audio.src=url;
   hint.style.display='none';
@@ -508,6 +935,7 @@ fileInput.addEventListener('change', e=>{
   audio.play().catch(()=>{});
   updateDownloadBtn();
   tagBtn.classList.remove('disabled');
+  if(currentUser){ addToPlaylistRow.style.display='flex'; saveToHistory(); }
 });
 
 playBtn.addEventListener('click',()=>{
