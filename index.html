@@ -110,7 +110,7 @@ body{
 .card.record-mode .ouce-toggle{left:50%;transform:translateX(-50%);font-size:13px;}
 .card.record-mode .ouce-toggle:active{transform:translateX(-50%) scale(.96);}
 .card.record-mode .ctrl-btn.settings,
-.card.record-mode #muteBtn{display:none;}
+.card.record-mode #repeatBtn{display:none;}
 .card.record-mode .controls{justify-content:center;}
 
 .auth-widget{
@@ -381,8 +381,8 @@ h1:focus{background:rgba(255,255,255,0.06);}
     <button class="ctrl-btn play" id="playBtn" title="Play/Pause">
       <svg id="playIcon" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg>
     </button>
-    <button class="ctrl-btn" id="muteBtn" title="Mudo">
-      <svg id="muteIcon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="4,9 8,9 12,5 12,19 8,15 4,15" fill="#fff" stroke="none"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+    <button class="ctrl-btn" id="repeatBtn" title="Repetir">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
     </button>
   </div>
 
@@ -546,7 +546,7 @@ const audio=document.getElementById('audio');
 const fileInput=document.getElementById('fileInput');
 const playBtn=document.getElementById('playBtn');
 const playIcon=document.getElementById('playIcon');
-const muteBtn=document.getElementById('muteBtn');
+const repeatBtn=document.getElementById('repeatBtn');
 const progressBar=document.getElementById('progressBar');
 const progressFill=document.getElementById('progressFill');
 const curTime=document.getElementById('curTime');
@@ -954,9 +954,9 @@ playBtn.addEventListener('click',()=>{
 audio.addEventListener('play',()=>{ playIcon.innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'; });
 audio.addEventListener('pause',()=>{ playIcon.innerHTML='<polygon points="6,4 20,12 6,20"/>'; });
 
-muteBtn.addEventListener('click',()=>{
-  audio.muted=!audio.muted;
-  muteBtn.classList.toggle('active',audio.muted);
+repeatBtn.addEventListener('click',()=>{
+  audio.loop=!audio.loop;
+  repeatBtn.classList.toggle('active',audio.loop);
 });
 
 vol.addEventListener('input',()=>{ audio.volume=vol.value; });
