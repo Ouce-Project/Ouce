@@ -325,7 +325,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
     </div>
     <div class="auth-error" id="authError"></div>
     <button class="auth-submit" id="authSubmit">Entrar</button>
-    <div class="auth-hint">...?</div>
+    <div class="auth-hint">Fica salvo só neste navegador.</div>
   </div>
   <div id="userChipWrap" style="display:none;">
     <button class="user-chip" id="userChip">
@@ -693,11 +693,19 @@ document.addEventListener('click', e=>{
 });
 
 let historyCache=[];
+let playlistsCache=[];
+
+function syncAddToPlaylistSelect(){
+  if(!currentHistoryId){ addToPlaylistSelect.value=''; return; }
+  const found=playlistsCache.find(pl=>(pl.track_ids||[]).includes(currentHistoryId));
+  addToPlaylistSelect.value = found ? String(found.id) : '';
+}
 
 async function refreshPlaylists(){
   if(!currentUser) return;
   const {data:lists, error}=await sb.from('playlists').select('*').order('created_at',{ascending:false});
   if(error){ console.error(error); return; }
+  playlistsCache=lists;
   playlistList.innerHTML='';
   addToPlaylistSelect.innerHTML='<option value="">Adicionar em...</option>';
   if(!lists.length){ playlistList.innerHTML='<div class="empty-list">Nenhuma playlist ainda.</div>'; }
@@ -715,6 +723,7 @@ async function refreshPlaylists(){
   const newOpt=document.createElement('option');
   newOpt.value='__new__'; newOpt.textContent='+ Criar nova playlist';
   addToPlaylistSelect.appendChild(newOpt);
+  syncAddToPlaylistSelect();
 }
 
 function togglePlaylistTracks(row, pl){
@@ -764,10 +773,7 @@ addToPlaylistSelect.addEventListener('change', async ()=>{
     const ids=[...(pl.track_ids||[]), currentHistoryId];
     await sb.from('playlists').update({track_ids:ids}).eq('id', val);
   }
-  await refreshPlaylists();
-  const original=addToPlaylistSelect.options[0].textContent;
-  addToPlaylistSelect.options[0].textContent='Adicionado ✓';
-  setTimeout(()=>{ addToPlaylistSelect.options[0].textContent=original; addToPlaylistSelect.value=''; },1200);
+  await refreshPlaylists(); // this re-syncs the select to show the playlist it now belongs to
 });
 
 async function refreshHistory(){
@@ -804,6 +810,7 @@ async function loadTrackIntoPlayer(item){
   speedupRange.value=s.speedup||0; speedupRange.dispatchEvent(new Event('input'));
   reverbRange.value=s.reverb||0; reverbRange.dispatchEvent(new Event('input'));
   if(currentUser) addToPlaylistRow.style.display='flex';
+  syncAddToPlaylistSelect();
   userDropdown.classList.remove('open'); userChip.classList.remove('open');
 }
 
@@ -935,6 +942,7 @@ fileInput.addEventListener('change', e=>{
   audio.play().catch(()=>{});
   updateDownloadBtn();
   tagBtn.classList.remove('disabled');
+  addToPlaylistSelect.value='';
   if(currentUser){ addToPlaylistRow.style.display='flex'; saveToHistory(); }
 });
 
