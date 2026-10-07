@@ -1060,5 +1060,462 @@ downloadBtn.addEventListener('click', async ()=>{
 draw();
 
 </script>
+  <!-- ===================== OUCE · BUSCA DO YOUTUBE =====================
+     Cole este bloco inteiro no seu index.html, logo ANTES de </body>
+     (depois do último </script>). Não precisa mexer em mais nada. -->
+
+<style>
+.top-row{gap:8px;}
+
+/* ícone do YouTube ao lado de "Carregar áudio" */
+.yt-toggle{
+  display:flex;align-items:center;justify-content:center;width:36px;height:30px;
+  border-radius:100px;border:1px solid var(--glass-border);background:var(--glass);
+  color:var(--white);cursor:pointer;transition:background .2s,border-color .2s,transform .15s;
+}
+.yt-toggle svg{width:17px;height:17px;}
+.yt-toggle:hover{background:rgba(255,255,255,0.12);}
+.yt-toggle:active{transform:scale(.94);}
+.yt-toggle.active{background:rgba(3,34,239,0.28);border-color:rgba(3,34,239,0.6);}
+.card.record-mode .yt-toggle,.card.record-mode .yt-panel{display:none;}
+
+/* painel da busca */
+.yt-box{padding:3px 3px 14px;}
+.yt-search{
+  display:flex;align-items:center;gap:8px;padding:5px 5px 5px 13px;border-radius:13px;
+  background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);
+  transition:border-color .25s,box-shadow .25s;
+}
+.yt-search:focus-within{border-color:rgba(3,34,239,0.6);box-shadow:0 0 0 3px rgba(3,34,239,0.16);}
+.yt-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--white);font-family:'Inter',sans-serif;font-size:13px;padding:8px 0;}
+.yt-search input::placeholder{color:var(--dim);}
+.yt-go{
+  flex:none;width:34px;height:34px;border:none;border-radius:10px;cursor:pointer;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(155deg,var(--blue-soft),var(--blue));box-shadow:0 8px 18px -8px rgba(3,34,239,0.7);
+  transition:transform .15s,filter .2s;
+}
+.yt-go svg{width:16px;height:16px;}
+.yt-go:hover:not(:disabled){filter:brightness(1.15);}
+.yt-go:active:not(:disabled){transform:scale(.93);}
+.yt-go:disabled{opacity:.6;cursor:wait;}
+
+.yt-msg{font-size:11px;min-height:14px;margin:8px 2px 0;color:var(--dim);}
+.yt-msg.err{color:#ff7a7a;}
+.yt-msg.ok{color:var(--blue-soft);}
+
+.yt-list{
+  list-style:none;margin:8px 0 0;padding:0 2px 0 0;display:grid;gap:8px;max-height:232px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.25) transparent;
+}
+.yt-list:empty{display:none;}
+.yt-item{
+  width:100%;display:grid;grid-template-columns:78px 1fr auto;align-items:center;gap:10px;padding:6px;text-align:left;
+  font-family:'Inter',sans-serif;color:var(--white);cursor:pointer;border-radius:14px;
+  background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);
+  transition:background .2s,border-color .2s,transform .2s;
+}
+.yt-item:hover:not(:disabled){background:rgba(255,255,255,0.1);border-color:rgba(58,76,255,0.55);}
+.yt-item:disabled{cursor:wait;}
+.yt-item img{width:78px;aspect-ratio:16/9;object-fit:cover;border-radius:9px;background:rgba(255,255,255,0.08);display:block;}
+.yt-item .t{font-size:12px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.yt-item .c{display:block;margin-top:2px;font-size:10.5px;color:var(--dim);}
+.yt-item .a{
+  font-size:10.5px;font-weight:600;padding:6px 10px;border-radius:100px;color:#fff;white-space:nowrap;
+  background:linear-gradient(155deg,var(--blue-soft),var(--blue));
+}
+.yt-item.busy .a{background:rgba(255,255,255,0.14);}
+.yt-skel{position:relative;overflow:hidden;height:54px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);}
+.yt-skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,0.12) 50%,transparent 80%);}
+
+.yt-cfg-link{background:none;border:none;margin-top:10px;padding:2px;color:var(--dim);font-family:'Inter',sans-serif;font-size:10.5px;text-decoration:underline;cursor:pointer;}
+.yt-cfg-link:hover{color:var(--white);}
+.yt-cfg{display:none;margin-top:6px;}
+.yt-cfg.open{display:block;}
+.yt-cfg label{display:block;margin-top:8px;font-size:11px;color:var(--dim);}
+.yt-cfg input{
+  width:100%;margin-top:4px;padding:9px 11px;border-radius:11px;outline:none;color:var(--white);
+  background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);font-family:'Inter',sans-serif;font-size:12px;
+}
+.yt-cfg input:focus{border-color:rgba(3,34,239,0.6);}
+.yt-cfg small{display:block;margin-top:4px;font-size:10px;color:var(--dim);}
+.yt-save{margin-top:10px;padding:8px 16px;border-radius:100px;border:1px solid rgba(3,34,239,0.5);background:rgba(3,34,239,0.18);color:var(--white);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;}
+.yt-save:hover{background:rgba(3,34,239,0.32);}
+.yt-hint{margin-top:10px;font-size:10px;color:var(--dim);}
+
+@media (max-width:420px){
+  .yt-item{grid-template-columns:70px 1fr;}
+  .yt-item img{width:70px;}
+  .yt-item .a{grid-column:1/-1;text-align:center;}
+}
+@media (prefers-reduced-motion:no-preference){
+  .yt-item{animation:ytIn .4s cubic-bezier(.19,1,.22,1) backwards;animation-delay:calc(var(--i,0) * 55ms);}
+  .yt-item:hover:not(:disabled){transform:translateY(-2px);}
+  .yt-item.busy .a{animation:ytPulse 1s ease-in-out infinite alternate;}
+  .yt-skel::after{animation:ytShine 1.2s linear infinite;}
+  @keyframes ytIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes ytPulse{from{opacity:.5;}to{opacity:1;}}
+  @keyframes ytShine{to{transform:translateX(100%);}}
+}
+</style>
+
+<script>
+(function(){
+  // ---- Se quiser deixar valores fixos no código, preencha aqui ----
+  // ytKey: chave da YouTube Data API v3 (restrinja ao domínio do seu site no Google Cloud)
+  // cobaltUrl: endereço do seu servidor cobalt (ex.: "https://cobalt.seudominio.com/")
+  // cobaltKey: só se o seu servidor exigir. NÃO deixe aqui se o repositório for público.
+  const PADRAO = { ytKey: "", cobaltUrl: "", cobaltKey: "" };
+
+  const $ = (id) => document.getElementById(id);
+  const ler = (k) => { try { return localStorage.getItem("ouce_" + k) || ""; } catch (_) { return ""; } };
+  const gravar = (k, v) => { try { localStorage.setItem("ouce_" + k, v); } catch (_) {} };
+  const cfg = () => ({
+    ytKey: (ler("ytKey") || PADRAO.ytKey).trim(),
+    cobaltUrl: (ler("cobaltUrl") || PADRAO.cobaltUrl).trim(),
+    cobaltKey: (ler("cobaltKey") || PADRAO.cobaltKey).trim(),
+  });
+
+  const topRow = document.querySelector(".top-row");
+  if (!topRow) return;
+
+  /* ---------- monta a interface ---------- */
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "yt-toggle";
+  toggle.title = "Buscar no YouTube";
+  toggle.setAttribute("aria-label", "Buscar no YouTube");
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><polygon points="10,9.2 15.2,12 10,14.8" fill="currentColor" stroke="none"/></svg>';
+  topRow.insertBefore(toggle, $("collapseUpload"));
+
+  const painel = document.createElement("div");
+  painel.className = "collapse yt-panel";
+  painel.id = "ytPanel";
+  painel.innerHTML =
+    '<div class="collapse-inner"><div class="yt-box">' +
+      '<form class="yt-search" id="ytForm" role="search">' +
+        '<input id="ytQ" type="search" placeholder="Pesquisar música ou colar link do YouTube" autocomplete="off" aria-label="Pesquisar no YouTube ou colar link">' +
+        '<button class="yt-go" id="ytGo" type="submit" aria-label="Pesquisar">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+        '</button>' +
+      '</form>' +
+      '<div class="yt-msg" id="ytMsg" role="status" aria-live="polite"></div>' +
+      '<ul class="yt-list" id="ytList"></ul>' +
+      '<button class="yt-cfg-link" id="ytCfgLink" type="button">Configurar chaves e servidor</button>' +
+      '<div class="yt-cfg" id="ytCfg">' +
+        '<label for="ytKey">Chave da API do YouTube (para pesquisar)<input id="ytKey" type="password" autocomplete="off" placeholder="YouTube Data API v3"></label>' +
+        '<label for="ytCobalt">Servidor de download (cobalt)<input id="ytCobalt" type="url" autocomplete="off" placeholder="https://cobalt.seudominio.com/"></label>' +
+        '<label for="ytCobaltKey">Chave do servidor (opcional)<input id="ytCobaltKey" type="password" autocomplete="off" placeholder="Só se o servidor exigir"></label>' +
+        '<small>Ficam salvas só neste navegador.</small>' +
+        '<button class="yt-save" id="ytSave" type="button">Salvar</button>' +
+      '</div>' +
+      '<div class="yt-hint">Use apenas com conteúdo que você tem permissão para baixar.</div>' +
+    '</div></div>';
+  topRow.after(painel);
+
+  $("ytKey").value = ler("ytKey") || PADRAO.ytKey;
+  $("ytCobalt").value = ler("cobaltUrl") || PADRAO.cobaltUrl;
+  $("ytCobaltKey").value = ler("cobaltKey") || PADRAO.cobaltKey;
+
+  /* ---------- utilidades ---------- */
+  function msg(texto, tipo) {
+    const m = $("ytMsg");
+    m.textContent = texto || "";
+    m.className = "yt-msg" + (tipo ? " " + tipo : "");
+  }
+
+  function abrirPainel(abrir) {
+    painel.classList.toggle("open", abrir);
+    toggle.classList.toggle("active", abrir);
+    toggle.setAttribute("aria-expanded", String(abrir));
+    if (abrir) setTimeout(() => $("ytQ").focus(), 250);
+  }
+
+  function abrirCfg(abrir) { $("ytCfg").classList.toggle("open", abrir); }
+
+  function idDoVideo(link) {
+    try {
+      const u = new URL(link);
+      const h = u.hostname.replace(/^www\.|^m\.|^music\./, "");
+      if (h === "youtu.be") return u.pathname.slice(1).split("/")[0] || null;
+      if (h === "youtube.com") {
+        if (u.searchParams.get("v")) return u.searchParams.get("v");
+        const m = u.pathname.match(/^\/(shorts|embed|live)\/([\w-]{6,})/);
+        return m ? m[2] : null;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function decodificar(html) {
+    return new DOMParser().parseFromString(html || "", "text/html").documentElement.textContent;
+  }
+
+  /* ---------- resultados ---------- */
+  function criarItem(v, i) {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "yt-item";
+    b.style.setProperty("--i", i);
+
+    const img = document.createElement("img");
+    img.src = v.thumb;
+    img.alt = "";
+    img.loading = "lazy";
+
+    const txt = document.createElement("span");
+    const t = document.createElement("span");
+    t.className = "t";
+    t.textContent = v.titulo;
+    const c = document.createElement("span");
+    c.className = "c";
+    c.textContent = v.canal;
+    txt.append(t, c);
+
+    const a = document.createElement("span");
+    a.className = "a";
+    a.textContent = "Ouvir";
+
+    b.append(img, txt, a);
+    b.addEventListener("click", () => carregar(v, b));
+    li.appendChild(b);
+    return { li, t, c };
+  }
+
+  function mostrarLista(videos) {
+    const lista = $("ytList");
+    lista.innerHTML = "";
+    videos.forEach((v, i) => lista.appendChild(criarItem(v, i).li));
+    lista.scrollTop = 0;
+  }
+
+  function mostrarEsqueleto() {
+    const lista = $("ytList");
+    lista.innerHTML = "";
+    for (let i = 0; i < 3; i++) {
+      const li = document.createElement("li");
+      li.className = "yt-skel";
+      lista.appendChild(li);
+    }
+  }
+
+  async function mostrarLink(link, id) {
+    const v = {
+      id, link,
+      titulo: "Vídeo do link",
+      canal: "youtube.com",
+      thumb: "https://i.ytimg.com/vi/" + encodeURIComponent(id) + "/mqdefault.jpg",
+    };
+    const lista = $("ytList");
+    lista.innerHTML = "";
+    const item = criarItem(v, 0);
+    lista.appendChild(item.li);
+    try {
+      const r = await fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent(link));
+      if (r.ok) {
+        const d = await r.json();
+        if (d.title) { v.titulo = d.title; item.t.textContent = d.title; }
+        if (d.author_name) { v.canal = d.author_name; item.c.textContent = d.author_name; }
+      }
+    } catch (_) { /* segue com o texto padrão */ }
+  }
+
+  function textoErroPesquisa(motivo) {
+    const m = String(motivo || "");
+    if (/quota|limit/i.test(m)) return "O limite diário de pesquisas dessa chave acabou. Cole o link do vídeo ou tente amanhã.";
+    if (/keyInvalid|API_KEY_INVALID|badRequest|INVALID_ARGUMENT/i.test(m)) return "A chave da API do YouTube é inválida.";
+    if (/accessNotConfigured|SERVICE_DISABLED/i.test(m)) return "A YouTube Data API v3 não está ativada para essa chave.";
+    if (/referer|forbidden|PERMISSION_DENIED/i.test(m)) return "Essa chave não permite pesquisas a partir deste site. Confira a restrição de domínio.";
+    return "Não foi possível pesquisar agora (" + m + ").";
+  }
+
+  async function pesquisar(consulta) {
+    msg("");
+    const id = idDoVideo(consulta);
+    if (id) { mostrarLink(consulta, id); return; }
+
+    const chave = cfg().ytKey;
+    if (!chave) {
+      abrirCfg(true);
+      msg("Para pesquisar pelo nome, informe a chave da API do YouTube. Ou cole o link do vídeo.", "err");
+      $("ytKey").focus();
+      return;
+    }
+
+    $("ytGo").disabled = true;
+    mostrarEsqueleto();
+    try {
+      const params = new URLSearchParams({ part: "snippet", type: "video", maxResults: "8", q: consulta, key: chave });
+      const r = await fetch("https://www.googleapis.com/youtube/v3/search?" + params.toString());
+      const d = await r.json();
+      if (!r.ok) {
+        const e = d.error || {};
+        const motivo = (e.errors && e.errors[0] && e.errors[0].reason) || e.status || r.status;
+        const erro = new Error(String(motivo));
+        erro.motivo = motivo;
+        throw erro;
+      }
+      const videos = (d.items || [])
+        .filter((it) => it.id && it.id.videoId)
+        .map((it) => ({
+          id: it.id.videoId,
+          link: "https://www.youtube.com/watch?v=" + it.id.videoId,
+          titulo: decodificar(it.snippet.title),
+          canal: decodificar(it.snippet.channelTitle),
+          thumb: ((it.snippet.thumbnails.medium || it.snippet.thumbnails.default) || {}).url || "",
+        }));
+      if (!videos.length) {
+        $("ytList").innerHTML = "";
+        msg("Nada encontrado. Tente outras palavras.", "err");
+      } else {
+        mostrarLista(videos);
+      }
+    } catch (e) {
+      $("ytList").innerHTML = "";
+      if (e && e.motivo) msg(textoErroPesquisa(e.motivo), "err");
+      else msg("Sem conexão com o YouTube. Verifique sua internet.", "err");
+    } finally {
+      $("ytGo").disabled = false;
+    }
+  }
+
+  /* ---------- do YouTube direto para o player ---------- */
+  function traduzirErro(codigo) {
+    const c = String(codigo || "");
+    if (c.includes("auth")) return "O servidor exige uma chave de API. Informe a chave do servidor em Configurar.";
+    if (c.includes("rate_limit")) return "Muitos pedidos em pouco tempo. Aguarde um instante.";
+    if (c.includes("unavailable") || c.includes("private")) return "Esse vídeo não está disponível.";
+    if (c.includes("age")) return "Esse vídeo tem restrição de idade.";
+    if (c.includes("live")) return "Transmissões ao vivo não podem ser carregadas.";
+    if (c.includes("link") || c.includes("url")) return "O servidor não reconheceu esse link.";
+    return "O servidor não conseguiu pegar o áudio (" + c + ").";
+  }
+
+  // Entrega o áudio ao player pelo mesmo caminho do "Carregar áudio",
+  // então histórico, equalizador, configurações e playlists funcionam igual.
+  function entregarAoPlayer(blob, v) {
+    const nome = (v.titulo || "audio").replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim() || "audio";
+    const tipo = blob.type && blob.type.indexOf("audio") === 0 ? blob.type : "audio/mpeg";
+    const arquivo = new File([blob], nome + ".mp3", { type: tipo });
+    $("artist").textContent = v.canal || "";
+    const dt = new DataTransfer();
+    dt.items.add(arquivo);
+    const entrada = $("fileInput");
+    entrada.files = dt.files;
+    entrada.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  let ocupado = false;
+
+  async function carregar(v, botao) {
+    if (ocupado) return;
+    const c = cfg();
+    if (!c.cobaltUrl) {
+      abrirCfg(true);
+      msg("Informe o endereço do servidor de download em Configurar.", "err");
+      $("ytCobalt").focus();
+      return;
+    }
+
+    const acao = botao.querySelector(".a");
+    ocupado = true;
+    botao.disabled = true;
+    botao.classList.add("busy");
+    acao.textContent = "Preparando…";
+    msg("");
+
+    // Libera o áudio do navegador enquanto o clique ainda é recente
+    try {
+      if (typeof setupAnalyser === "function") {
+        setupAnalyser();
+        if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+      }
+    } catch (_) {}
+
+    let deuCerto = false;
+    try {
+      const cab = { "Accept": "application/json", "Content-Type": "application/json" };
+      if (c.cobaltKey) cab["Authorization"] = "Api-Key " + c.cobaltKey;
+
+      const r = await fetch(c.cobaltUrl, {
+        method: "POST",
+        headers: cab,
+        body: JSON.stringify({ url: v.link, downloadMode: "audio", audioFormat: "mp3", filenameStyle: "basic", alwaysProxy: true }),
+      });
+      const d = await r.json();
+
+      if (d.status === "error") throw new Error(traduzirErro(d.error && d.error.code));
+      const arquivoUrl = d.url || (d.status === "picker" && d.audio) || null;
+      if (!arquivoUrl) throw new Error("Resposta inesperada do servidor.");
+
+      acao.textContent = "Baixando…";
+      const resp = await fetch(arquivoUrl);
+      if (!resp.ok) throw new Error("O servidor não entregou o áudio.");
+
+      const total = parseInt(resp.headers.get("Content-Length") || "0", 10);
+      let blob;
+      if (resp.body && resp.body.getReader && total) {
+        const leitor = resp.body.getReader();
+        const partes = [];
+        let lido = 0;
+        for (;;) {
+          const { done, value } = await leitor.read();
+          if (done) break;
+          partes.push(value);
+          lido += value.length;
+          acao.textContent = Math.min(100, Math.round((lido / total) * 100)) + "%";
+        }
+        blob = new Blob(partes, { type: resp.headers.get("Content-Type") || "audio/mpeg" });
+      } else {
+        blob = await resp.blob();
+      }
+
+      entregarAoPlayer(blob, v);
+      deuCerto = true;
+      msg("Pronto: o áudio já está no player.", "ok");
+      setTimeout(() => abrirPainel(false), 900);
+    } catch (e) {
+      const texto = e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)
+        ? e.message
+        : "Não foi possível falar com o servidor. Confira o endereço e se ele permite acesso a partir deste site (CORS).";
+      msg(texto, "err");
+    } finally {
+      ocupado = false;
+      botao.disabled = false;
+      botao.classList.remove("busy");
+      acao.textContent = deuCerto ? "Ouvir de novo" : "Ouvir";
+    }
+  }
+
+  /* ---------- eventos ---------- */
+  toggle.addEventListener("click", () => abrirPainel(!painel.classList.contains("open")));
+
+  $("ytForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const q = $("ytQ").value.trim();
+    if (!q) { msg("Digite o nome da música ou cole um link.", "err"); return; }
+    pesquisar(q);
+  });
+
+  // Colou um link? Mostra o vídeo na hora, sem gastar pesquisa.
+  $("ytQ").addEventListener("input", () => {
+    const q = $("ytQ").value.trim();
+    const id = idDoVideo(q);
+    if (id) { msg(""); mostrarLink(q, id); }
+  });
+
+  $("ytCfgLink").addEventListener("click", () => abrirCfg(!$("ytCfg").classList.contains("open")));
+  $("ytSave").addEventListener("click", () => {
+    gravar("ytKey", $("ytKey").value.trim());
+    gravar("cobaltUrl", $("ytCobalt").value.trim());
+    gravar("cobaltKey", $("ytCobaltKey").value.trim());
+    msg("Configuração salva neste navegador.", "ok");
+    abrirCfg(false);
+  });
+})();
+</script>
 </body>
 </html>
