@@ -1059,27 +1059,29 @@ downloadBtn.addEventListener('click', async ()=>{
 
 draw();
 
-</script>
-  <!-- ===================== OUCE · BUSCA DO YOUTUBE =====================
+<!-- ===================== OUCE · ÁUDIO DO YOUTUBE (LINK OU BUSCA) =====================
      Cole este bloco inteiro no seu index.html, logo ANTES de </body>
-     (depois do último </script>). Não precisa mexer em mais nada. -->
+     (depois do último </script>). Não precisa mexer em mais nada.
+
+     Para já sair funcionando, preencha SERVIDOR_PADRAO no começo do script
+     com o endereço do seu servidor cobalt (é ele que entrega o áudio). -->
 
 <style>
 .top-row{gap:8px;}
 
-/* ícone do YouTube ao lado de "Carregar áudio" */
+/* ícone de link ao lado de "Carregar áudio" */
 .yt-toggle{
   display:flex;align-items:center;justify-content:center;width:36px;height:30px;
   border-radius:100px;border:1px solid var(--glass-border);background:var(--glass);
   color:var(--white);cursor:pointer;transition:background .2s,border-color .2s,transform .15s;
 }
-.yt-toggle svg{width:17px;height:17px;}
+.yt-toggle svg{width:16px;height:16px;}
 .yt-toggle:hover{background:rgba(255,255,255,0.12);}
 .yt-toggle:active{transform:scale(.94);}
 .yt-toggle.active{background:rgba(3,34,239,0.28);border-color:rgba(3,34,239,0.6);}
 .card.record-mode .yt-toggle,.card.record-mode .yt-panel{display:none;}
 
-/* painel da busca */
+/* painel */
 .yt-box{padding:3px 3px 14px;}
 .yt-search{
   display:flex;align-items:center;gap:8px;padding:5px 5px 5px 13px;border-radius:13px;
@@ -1087,6 +1089,7 @@ draw();
   transition:border-color .25s,box-shadow .25s;
 }
 .yt-search:focus-within{border-color:rgba(3,34,239,0.6);box-shadow:0 0 0 3px rgba(3,34,239,0.16);}
+.yt-search > svg{width:15px;height:15px;stroke:var(--dim);fill:none;flex-shrink:0;}
 .yt-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--white);font-family:'Inter',sans-serif;font-size:13px;padding:8px 0;}
 .yt-search input::placeholder{color:var(--dim);}
 .yt-go{
@@ -1103,6 +1106,7 @@ draw();
 .yt-msg.err{color:#ff7a7a;}
 .yt-msg.ok{color:var(--blue-soft);}
 
+/* lista (prévia do link ou resultados da busca) */
 .yt-list{
   list-style:none;margin:8px 0 0;padding:0 2px 0 0;display:grid;gap:8px;max-height:232px;overflow-y:auto;
   scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.25) transparent;
@@ -1127,6 +1131,7 @@ draw();
 .yt-skel{position:relative;overflow:hidden;height:54px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);}
 .yt-skel::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,0.12) 50%,transparent 80%);}
 
+/* servidor (configuração única) */
 .yt-cfg-link{background:none;border:none;margin-top:10px;padding:2px;color:var(--dim);font-family:'Inter',sans-serif;font-size:10.5px;text-decoration:underline;cursor:pointer;}
 .yt-cfg-link:hover{color:var(--white);}
 .yt-cfg{display:none;margin-top:6px;}
@@ -1141,6 +1146,8 @@ draw();
 .yt-save{margin-top:10px;padding:8px 16px;border-radius:100px;border:1px solid rgba(3,34,239,0.5);background:rgba(3,34,239,0.18);color:var(--white);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;}
 .yt-save:hover{background:rgba(3,34,239,0.32);}
 .yt-hint{margin-top:10px;font-size:10px;color:var(--dim);}
+.yt-check{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--dim);cursor:pointer;}
+.yt-check input{accent-color:var(--blue-soft);margin:0;cursor:pointer;}
 
 @media (max-width:420px){
   .yt-item{grid-template-columns:70px 1fr;}
@@ -1160,64 +1167,67 @@ draw();
 
 <script>
 (function(){
-  // ---- Se quiser deixar valores fixos no código, preencha aqui ----
-  // ytKey: chave da YouTube Data API v3 (restrinja ao domínio do seu site no Google Cloud)
-  // cobaltUrl: endereço do seu servidor cobalt (ex.: "https://cobalt.seudominio.com/")
-  // cobaltKey: só se o seu servidor exigir. NÃO deixe aqui se o repositório for público.
-  const PADRAO = { ytKey: "", cobaltUrl: "", cobaltKey: "" };
+  // ---- Configuração ----
+  // API_BUSCA: API que pesquisa vídeos pelo nome. Deixe "" para desativar a pesquisa
+  //            (aí a barra aceita só link).
+  // SERVIDOR_PADRAO: endereço do seu servidor cobalt (ex.: "https://cobalt.seudominio.com/")
+  // CHAVE_PADRAO: só se o seu servidor exigir. NÃO deixe aqui se o repositório for público.
+  const API_BUSCA = "https://ytapi.mubilop.com/search";
+  const SERVIDOR_PADRAO = "";
+  const CHAVE_PADRAO = "";
 
   const $ = (id) => document.getElementById(id);
   const ler = (k) => { try { return localStorage.getItem("ouce_" + k) || ""; } catch (_) { return ""; } };
   const gravar = (k, v) => { try { localStorage.setItem("ouce_" + k, v); } catch (_) {} };
-  const cfg = () => ({
-    ytKey: (ler("ytKey") || PADRAO.ytKey).trim(),
-    cobaltUrl: (ler("cobaltUrl") || PADRAO.cobaltUrl).trim(),
-    cobaltKey: (ler("cobaltKey") || PADRAO.cobaltKey).trim(),
-  });
+  const servidor = () => (ler("cobaltUrl") || SERVIDOR_PADRAO).trim();
+  const chave = () => (ler("cobaltKey") || CHAVE_PADRAO).trim();
 
   const topRow = document.querySelector(".top-row");
   if (!topRow) return;
 
-  /* ---------- monta a interface ---------- */
+  const LINK_SVG = '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>';
+
+  /* ---------- interface ---------- */
   const toggle = document.createElement("button");
   toggle.type = "button";
   toggle.className = "yt-toggle";
-  toggle.title = "Buscar no YouTube";
-  toggle.setAttribute("aria-label", "Buscar no YouTube");
+  toggle.title = API_BUSCA ? "Pesquisar ou colar link do YouTube" : "Colar link do YouTube";
+  toggle.setAttribute("aria-label", toggle.title);
   toggle.setAttribute("aria-expanded", "false");
-  toggle.innerHTML =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-    '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><polygon points="10,9.2 15.2,12 10,14.8" fill="currentColor" stroke="none"/></svg>';
+  toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + LINK_SVG + '</svg>';
   topRow.insertBefore(toggle, $("collapseUpload"));
 
+  const textoCampo = API_BUSCA ? "Pesquisar ou colar link do YouTube" : "Cole o link do YouTube";
   const painel = document.createElement("div");
   painel.className = "collapse yt-panel";
   painel.id = "ytPanel";
   painel.innerHTML =
     '<div class="collapse-inner"><div class="yt-box">' +
-      '<form class="yt-search" id="ytForm" role="search">' +
-        '<input id="ytQ" type="search" placeholder="Pesquisar música ou colar link do YouTube" autocomplete="off" aria-label="Pesquisar no YouTube ou colar link">' +
-        '<button class="yt-go" id="ytGo" type="submit" aria-label="Pesquisar">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+      '<form class="yt-search" id="ytForm">' +
+        '<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + LINK_SVG + '</svg>' +
+        '<input id="ytQ" type="text" inputmode="url" enterkeyhint="go" placeholder="' + textoCampo + '" autocomplete="off" aria-label="' + textoCampo + '">' +
+        '<button class="yt-go" id="ytGo" type="submit" aria-label="Colocar no player">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>' +
         '</button>' +
       '</form>' +
       '<div class="yt-msg" id="ytMsg" role="status" aria-live="polite"></div>' +
       '<ul class="yt-list" id="ytList"></ul>' +
-      '<button class="yt-cfg-link" id="ytCfgLink" type="button">Configurar chaves e servidor</button>' +
+      '<label class="yt-check"><input type="checkbox" id="ytSalvar"> Salvar também uma cópia no aparelho</label>' +
+      '<button class="yt-cfg-link" id="ytCfgLink" type="button">Configurar servidor</button>' +
       '<div class="yt-cfg" id="ytCfg">' +
-        '<label for="ytKey">Chave da API do YouTube (para pesquisar)<input id="ytKey" type="password" autocomplete="off" placeholder="YouTube Data API v3"></label>' +
         '<label for="ytCobalt">Servidor de download (cobalt)<input id="ytCobalt" type="url" autocomplete="off" placeholder="https://cobalt.seudominio.com/"></label>' +
         '<label for="ytCobaltKey">Chave do servidor (opcional)<input id="ytCobaltKey" type="password" autocomplete="off" placeholder="Só se o servidor exigir"></label>' +
-        '<small>Ficam salvas só neste navegador.</small>' +
+        '<small>Fica salvo só neste navegador.</small>' +
         '<button class="yt-save" id="ytSave" type="button">Salvar</button>' +
       '</div>' +
       '<div class="yt-hint">Use apenas com conteúdo que você tem permissão para baixar.</div>' +
     '</div></div>';
   topRow.after(painel);
 
-  $("ytKey").value = ler("ytKey") || PADRAO.ytKey;
-  $("ytCobalt").value = ler("cobaltUrl") || PADRAO.cobaltUrl;
-  $("ytCobaltKey").value = ler("cobaltKey") || PADRAO.cobaltKey;
+  $("ytSalvar").checked = ler("salvarCopia") === "1";
+  $("ytSalvar").addEventListener("change", () => gravar("salvarCopia", $("ytSalvar").checked ? "1" : "0"));
+  $("ytCobalt").value = ler("cobaltUrl") || SERVIDOR_PADRAO;
+  $("ytCobaltKey").value = ler("cobaltKey") || CHAVE_PADRAO;
 
   /* ---------- utilidades ---------- */
   function msg(texto, tipo) {
@@ -1249,11 +1259,10 @@ draw();
     return null;
   }
 
-  function decodificar(html) {
-    return new DOMParser().parseFromString(html || "", "text/html").documentElement.textContent;
-  }
+  const miniatura = (id) => "https://i.ytimg.com/vi/" + encodeURIComponent(id) + "/mqdefault.jpg";
+  const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  /* ---------- resultados ---------- */
+  /* ---------- lista: itens, esqueleto, link e busca ---------- */
   function criarItem(v, i) {
     const li = document.createElement("li");
     const b = document.createElement("button");
@@ -1272,7 +1281,7 @@ draw();
     t.textContent = v.titulo;
     const c = document.createElement("span");
     c.className = "c";
-    c.textContent = v.canal;
+    c.textContent = [v.canal, v.duracao].filter(Boolean).join(" · ");
     txt.append(t, c);
 
     const a = document.createElement("span");
@@ -1282,14 +1291,7 @@ draw();
     b.append(img, txt, a);
     b.addEventListener("click", () => carregar(v, b));
     li.appendChild(b);
-    return { li, t, c };
-  }
-
-  function mostrarLista(videos) {
-    const lista = $("ytList");
-    lista.innerHTML = "";
-    videos.forEach((v, i) => lista.appendChild(criarItem(v, i).li));
-    lista.scrollTop = 0;
+    return { li, botao: b, t, c };
   }
 
   function mostrarEsqueleto() {
@@ -1302,81 +1304,57 @@ draw();
     }
   }
 
-  async function mostrarLink(link, id) {
-    const v = {
-      id, link,
-      titulo: "Vídeo do link",
-      canal: "youtube.com",
-      thumb: "https://i.ytimg.com/vi/" + encodeURIComponent(id) + "/mqdefault.jpg",
-    };
+  function limparLista() { $("ytList").innerHTML = ""; }
+
+  // Mostra o vídeo de um link colado. Devolve { v, botao } na hora;
+  // o título real chega em segundo plano (v.pronto) e é aguardado antes de carregar.
+  function mostrarLink(link, id) {
+    const v = { id, link, titulo: "Vídeo do link", canal: "youtube.com", duracao: "", thumb: miniatura(id) };
+    const item = criarItem(v, 0);
     const lista = $("ytList");
     lista.innerHTML = "";
-    const item = criarItem(v, 0);
     lista.appendChild(item.li);
-    try {
-      const r = await fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent(link));
-      if (r.ok) {
-        const d = await r.json();
-        if (d.title) { v.titulo = d.title; item.t.textContent = d.title; }
-        if (d.author_name) { v.canal = d.author_name; item.c.textContent = d.author_name; }
-      }
-    } catch (_) { /* segue com o texto padrão */ }
-  }
 
-  function textoErroPesquisa(motivo) {
-    const m = String(motivo || "");
-    if (/quota|limit/i.test(m)) return "O limite diário de pesquisas dessa chave acabou. Cole o link do vídeo ou tente amanhã.";
-    if (/keyInvalid|API_KEY_INVALID|badRequest|INVALID_ARGUMENT/i.test(m)) return "A chave da API do YouTube é inválida.";
-    if (/accessNotConfigured|SERVICE_DISABLED/i.test(m)) return "A YouTube Data API v3 não está ativada para essa chave.";
-    if (/referer|forbidden|PERMISSION_DENIED/i.test(m)) return "Essa chave não permite pesquisas a partir deste site. Confira a restrição de domínio.";
-    return "Não foi possível pesquisar agora (" + m + ").";
+    v.pronto = Promise.race([
+      fetch("https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent(link))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (!d) return;
+          if (d.title) { v.titulo = d.title; item.t.textContent = d.title; }
+          if (d.author_name) { v.canal = d.author_name; item.c.textContent = d.author_name; }
+        })
+        .catch(() => {}),
+      esperar(3000),
+    ]);
+    return { v, botao: item.botao };
   }
 
   async function pesquisar(consulta) {
     msg("");
-    const id = idDoVideo(consulta);
-    if (id) { mostrarLink(consulta, id); return; }
-
-    const chave = cfg().ytKey;
-    if (!chave) {
-      abrirCfg(true);
-      msg("Para pesquisar pelo nome, informe a chave da API do YouTube. Ou cole o link do vídeo.", "err");
-      $("ytKey").focus();
-      return;
-    }
-
     $("ytGo").disabled = true;
     mostrarEsqueleto();
     try {
-      const params = new URLSearchParams({ part: "snippet", type: "video", maxResults: "8", q: consulta, key: chave });
-      const r = await fetch("https://www.googleapis.com/youtube/v3/search?" + params.toString());
+      const r = await fetch(API_BUSCA + "?query=" + encodeURIComponent(consulta));
+      if (!r.ok) throw new Error("http " + r.status);
       const d = await r.json();
-      if (!r.ok) {
-        const e = d.error || {};
-        const motivo = (e.errors && e.errors[0] && e.errors[0].reason) || e.status || r.status;
-        const erro = new Error(String(motivo));
-        erro.motivo = motivo;
-        throw erro;
-      }
-      const videos = (d.items || [])
-        .filter((it) => it.id && it.id.videoId)
-        .map((it) => ({
-          id: it.id.videoId,
-          link: "https://www.youtube.com/watch?v=" + it.id.videoId,
-          titulo: decodificar(it.snippet.title),
-          canal: decodificar(it.snippet.channelTitle),
-          thumb: ((it.snippet.thumbnails.medium || it.snippet.thumbnails.default) || {}).url || "",
+      const videos = (Array.isArray(d.results) ? d.results : [])
+        .filter((x) => x && x.id)
+        .map((x) => ({
+          id: x.id,
+          link: x.url || "https://www.youtube.com/watch?v=" + x.id,
+          titulo: x.title || "Sem título",
+          canal: x.channel || "",
+          duracao: x.duration || "",
+          thumb: miniatura(x.id),
         }));
-      if (!videos.length) {
-        $("ytList").innerHTML = "";
-        msg("Nada encontrado. Tente outras palavras.", "err");
-      } else {
-        mostrarLista(videos);
-      }
-    } catch (e) {
-      $("ytList").innerHTML = "";
-      if (e && e.motivo) msg(textoErroPesquisa(e.motivo), "err");
-      else msg("Sem conexão com o YouTube. Verifique sua internet.", "err");
+      const lista = $("ytList");
+      lista.innerHTML = "";
+      if (!videos.length) { msg("Nada encontrado. Tente outras palavras.", "err"); return; }
+      videos.forEach((v, i) => lista.appendChild(criarItem(v, i).li));
+      lista.scrollTop = 0;
+    } catch (_) {
+      limparLista();
+      msg("A pesquisa não respondeu agora. Tente de novo ou cole o link do vídeo.", "err");
     } finally {
       $("ytGo").disabled = false;
     }
@@ -1385,7 +1363,7 @@ draw();
   /* ---------- do YouTube direto para o player ---------- */
   function traduzirErro(codigo) {
     const c = String(codigo || "");
-    if (c.includes("auth")) return "O servidor exige uma chave de API. Informe a chave do servidor em Configurar.";
+    if (c.includes("auth")) return "O servidor exige uma chave. Informe em Configurar servidor.";
     if (c.includes("rate_limit")) return "Muitos pedidos em pouco tempo. Aguarde um instante.";
     if (c.includes("unavailable") || c.includes("private")) return "Esse vídeo não está disponível.";
     if (c.includes("age")) return "Esse vídeo tem restrição de idade.";
@@ -1394,28 +1372,55 @@ draw();
     return "O servidor não conseguiu pegar o áudio (" + c + ").";
   }
 
+  // Com audioFormat "best" o servidor entrega o áudio original (sem conversão),
+  // então o formato pode variar (m4a, webm, ogg...). Descobrimos pelo nome ou pelo tipo.
+  const TIPO_POR_EXT = { m4a: "audio/mp4", mp4: "audio/mp4", aac: "audio/aac", mp3: "audio/mpeg", webm: "audio/webm", ogg: "audio/ogg", opus: "audio/ogg", wav: "audio/wav" };
+  const EXT_POR_TIPO = { "audio/mp4": "m4a", "audio/x-m4a": "m4a", "video/mp4": "m4a", "audio/aac": "aac", "audio/mpeg": "mp3", "audio/webm": "webm", "video/webm": "webm", "audio/ogg": "ogg", "audio/opus": "opus", "audio/wav": "wav", "audio/x-wav": "wav" };
+
+  function descobrirFormato(resposta, nomeDoServidor) {
+    let ext = ((nomeDoServidor || "").match(/\.([a-z0-9]{2,5})$/i) || [])[1];
+    ext = ext ? ext.toLowerCase() : "";
+    if (!TIPO_POR_EXT[ext]) {
+      const ct = (resposta.headers.get("Content-Type") || "").split(";")[0].trim().toLowerCase();
+      ext = EXT_POR_TIPO[ct] || "m4a";
+    }
+    return { ext, tipo: TIPO_POR_EXT[ext] || "audio/mp4" };
+  }
+
+  function salvarCopia(arquivo) {
+    const u = URL.createObjectURL(arquivo);
+    const a = document.createElement("a");
+    a.href = u;
+    a.download = arquivo.name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(u), 10000);
+  }
+
   // Entrega o áudio ao player pelo mesmo caminho do "Carregar áudio",
   // então histórico, equalizador, configurações e playlists funcionam igual.
-  function entregarAoPlayer(blob, v) {
+  function entregarAoPlayer(blob, v, formato) {
     const nome = (v.titulo || "audio").replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim() || "audio";
-    const tipo = blob.type && blob.type.indexOf("audio") === 0 ? blob.type : "audio/mpeg";
-    const arquivo = new File([blob], nome + ".mp3", { type: tipo });
+    const arquivo = new File([blob], nome + "." + formato.ext, { type: formato.tipo });
     $("artist").textContent = v.canal || "";
     const dt = new DataTransfer();
     dt.items.add(arquivo);
     const entrada = $("fileInput");
     entrada.files = dt.files;
     entrada.dispatchEvent(new Event("change", { bubbles: true }));
+    if ($("ytSalvar").checked) salvarCopia(arquivo);
   }
 
   let ocupado = false;
 
   async function carregar(v, botao) {
     if (ocupado) return;
-    const c = cfg();
-    if (!c.cobaltUrl) {
+
+    const url = servidor();
+    if (!url) {
       abrirCfg(true);
-      msg("Informe o endereço do servidor de download em Configurar.", "err");
+      msg("Falta o endereço do servidor de download. Informe em Configurar servidor.", "err");
       $("ytCobalt").focus();
       return;
     }
@@ -1424,6 +1429,7 @@ draw();
     ocupado = true;
     botao.disabled = true;
     botao.classList.add("busy");
+    $("ytGo").disabled = true;
     acao.textContent = "Preparando…";
     msg("");
 
@@ -1437,13 +1443,15 @@ draw();
 
     let deuCerto = false;
     try {
-      const cab = { "Accept": "application/json", "Content-Type": "application/json" };
-      if (c.cobaltKey) cab["Authorization"] = "Api-Key " + c.cobaltKey;
+      if (v.pronto) await v.pronto; // garante o título real no nome do arquivo
 
-      const r = await fetch(c.cobaltUrl, {
+      const cab = { "Accept": "application/json", "Content-Type": "application/json" };
+      if (chave()) cab["Authorization"] = "Api-Key " + chave();
+
+      const r = await fetch(url, {
         method: "POST",
         headers: cab,
-        body: JSON.stringify({ url: v.link, downloadMode: "audio", audioFormat: "mp3", filenameStyle: "basic", alwaysProxy: true }),
+        body: JSON.stringify({ url: v.link, downloadMode: "audio", audioFormat: "best", filenameStyle: "basic", alwaysProxy: true }),
       });
       const d = await r.json();
 
@@ -1473,10 +1481,10 @@ draw();
         blob = await resp.blob();
       }
 
-      entregarAoPlayer(blob, v);
+      entregarAoPlayer(blob, v, descobrirFormato(resp, d.filename));
       deuCerto = true;
       msg("Pronto: o áudio já está no player.", "ok");
-      setTimeout(() => abrirPainel(false), 900);
+      setTimeout(() => { abrirPainel(false); $("ytQ").value = ""; limparLista(); msg(""); }, 1000);
     } catch (e) {
       const texto = e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)
         ? e.message
@@ -1484,6 +1492,7 @@ draw();
       msg(texto, "err");
     } finally {
       ocupado = false;
+      $("ytGo").disabled = false;
       botao.disabled = false;
       botao.classList.remove("busy");
       acao.textContent = deuCerto ? "Ouvir de novo" : "Ouvir";
@@ -1495,24 +1504,36 @@ draw();
 
   $("ytForm").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (ocupado) return;
     const q = $("ytQ").value.trim();
-    if (!q) { msg("Digite o nome da música ou cole um link.", "err"); return; }
-    pesquisar(q);
+    if (!q) { msg(API_BUSCA ? "Digite um nome ou cole um link do YouTube." : "Cole um link do YouTube.", "err"); return; }
+
+    const id = idDoVideo(q);
+    if (id) {
+      // Link: vai direto para o player
+      const { v, botao } = mostrarLink(q, id);
+      carregar(v, botao);
+    } else if (API_BUSCA) {
+      pesquisar(q);
+    } else {
+      msg("Cole um link válido do YouTube.", "err");
+    }
   });
 
-  // Colou um link? Mostra o vídeo na hora, sem gastar pesquisa.
+  // Colou um link? Mostra o vídeo na hora (sem carregar ainda).
   $("ytQ").addEventListener("input", () => {
+    if (ocupado) return;
     const q = $("ytQ").value.trim();
     const id = idDoVideo(q);
     if (id) { msg(""); mostrarLink(q, id); }
+    else if (!q) { limparLista(); msg(""); }
   });
 
   $("ytCfgLink").addEventListener("click", () => abrirCfg(!$("ytCfg").classList.contains("open")));
   $("ytSave").addEventListener("click", () => {
-    gravar("ytKey", $("ytKey").value.trim());
     gravar("cobaltUrl", $("ytCobalt").value.trim());
     gravar("cobaltKey", $("ytCobaltKey").value.trim());
-    msg("Configuração salva neste navegador.", "ok");
+    msg("Servidor salvo neste navegador.", "ok");
     abrirCfg(false);
   });
 })();
