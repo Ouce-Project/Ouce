@@ -179,12 +179,19 @@ body{
 }
 .user-chip:hover{background:rgba(255,255,255,0.14);}
 .user-avatar{
-  width:27px;height:27px;border-radius:50%;flex-shrink:0;
+  position:relative;width:32px;height:32px;border-radius:50%;flex-shrink:0;cursor:pointer;
   background:linear-gradient(155deg,var(--blue-soft),var(--blue));
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 12px -1px rgba(3,34,239,0.8);
 }
-.user-avatar svg{width:14px;height:14px;stroke:#fff;fill:none;}
+.user-avatar svg{width:16px;height:16px;stroke:#fff;fill:none;}
+.user-avatar.has-photo{background-size:cover;background-position:center;background-repeat:no-repeat;}
+.user-avatar.has-photo svg{display:none;}
+.user-avatar.has-photo::after{
+  content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:linear-gradient(to top, rgba(3,34,239,0.95) 0%, rgba(30,60,255,0.55) 32%, rgba(3,34,239,0) 70%);
+  mix-blend-mode:screen;
+}
 .user-chip span{font-family:'Inter',sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .user-chip .chev{margin-left:2px;transition:transform .3s;flex-shrink:0;stroke:var(--dim);}
 .user-chip.open .chev{transform:rotate(180deg);}
@@ -367,10 +374,11 @@ h1:focus{background:rgba(255,255,255,0.06);}
   </div>
   <div id="userChipWrap" style="display:none;">
     <button class="user-chip" id="userChip">
-      <span class="user-avatar"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+      <span class="user-avatar" id="userAvatar" title="Trocar foto"><svg viewBox="0 0 24 24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
       <span id="userEmailLabel"></span>
       <svg class="chev" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="6,9 12,15 18,9"/></svg>
     </button>
+    <input type="file" id="avatarInput" accept="image/*">
     <div class="user-dropdown" id="userDropdown">
       <button class="dropdown-item" id="menuPlaylists"><span>Playlists</span><span class="count" id="playlistsCount"></span></button>
       <button class="dropdown-item" id="menuHistory"><span>Histórico</span><span class="count" id="historyCount"></span></button>
@@ -707,6 +715,7 @@ async function enterLoggedInState(email){
   userChipWrap.style.display='';
   userEmailLabel.textContent=email;
   addToPlaylistRow.style.display = currentFile ? 'flex' : 'none';
+  loadAvatar();
   await refreshPlaylists();
   await refreshHistory();
 }
@@ -717,6 +726,7 @@ function exitLoggedInState(){
   userChip.classList.remove('open');
   addToPlaylistRow.style.display='none';
   authButtons.style.display='';
+  setAvatar(null);
 }
 
 sb.auth.onAuthStateChange((event, session)=>{
@@ -728,6 +738,68 @@ userChip.addEventListener('click', ()=>{
   userDropdown.classList.toggle('open');
   userChip.classList.toggle('open');
 });
+
+// ---------- avatar (photo with blue light from below) ----------
+const avatarEl=document.getElementById('userAvatar');
+const avatarInput=document.getElementById('avatarInput');
+
+function setAvatar(url){
+  if(url){ avatarEl.style.backgroundImage=`url("${url}")`; avatarEl.classList.add('has-photo'); }
+  else { avatarEl.style.backgroundImage=''; avatarEl.classList.remove('has-photo'); }
+}
+function blobToDataURL(blob){
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(blob); });
+}
+function resizeToSquare(file,size){
+  return new Promise((res,rej)=>{
+    const img=new Image(); const u=URL.createObjectURL(file);
+    img.onload=()=>{
+      const s=Math.min(img.naturalWidth,img.naturalHeight);
+      const c=document.createElement('canvas'); c.width=c.height=size;
+      c.getContext('2d').drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,0,0,size,size);
+      URL.revokeObjectURL(u);
+      c.toBlob(b=>b?res(b):rej(new Error('blob')),'image/jpeg',0.88);
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(u); rej(new Error('img')); };
+    img.src=u;
+  });
+}
+async function currentUid(){
+  const {data:{session}}=await sb.auth.getSession();
+  return session ? session.user.id : null;
+}
+async function loadAvatar(){
+  const uid=await currentUid(); if(!uid) return;
+  let local=null; try{ local=localStorage.getItem('ouce_avatar_'+uid); }catch(e){}
+  if(local) setAvatar(local);
+  try{
+    const {data:blob}=await sb.storage.from('audio').download(`${uid}/avatar.jpg`);
+    if(!blob || !currentUser) return;
+    const url=await blobToDataURL(new Blob([blob],{type:'image/jpeg'}));
+    if(url!==local){ setAvatar(url); try{ localStorage.setItem('ouce_avatar_'+uid,url); }catch(e){} }
+  }catch(e){ console.error(e); }
+}
+
+avatarEl.addEventListener('click', e=>{ e.stopPropagation(); avatarInput.click(); });
+avatarInput.addEventListener('change', async ()=>{
+  const f=avatarInput.files[0]; avatarInput.value='';
+  if(!f) return;
+  let blob, url;
+  try{
+    blob=await resizeToSquare(f,256);
+    url=await blobToDataURL(blob);
+  }catch(err){ alert('Não consegui abrir essa imagem.'); return; }
+  setAvatar(url);
+  try{
+    const uid=await currentUid(); if(!uid) return;
+    try{ localStorage.setItem('ouce_avatar_'+uid,url); }catch(e){}
+    const path=`${uid}/avatar.jpg`;
+    await sb.storage.from('audio').remove([path]);
+    const {error}=await sb.storage.from('audio').upload(path, blob, {contentType:'image/jpeg'});
+    if(error) console.error(error);
+  }catch(err){ console.error(err); }
+});
+
 logoutBtn.addEventListener('click', ()=>sb.auth.signOut());
 
 document.addEventListener('click', e=>{
