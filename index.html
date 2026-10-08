@@ -114,7 +114,7 @@ body{
 .card.record-mode .controls{justify-content:center;}
 
 .auth-widget{
-  position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:calc(18px + env(safe-area-inset-left,0px));
+  position:fixed;top:calc(18px + env(safe-area-inset-top,0px));right:calc(18px + env(safe-area-inset-right,0px));
   z-index:12;opacity:0;transform:translateY(-10px);pointer-events:none;
   transition:opacity .8s ease, transform .8s cubic-bezier(.19,1,.22,1);
 }
@@ -138,7 +138,7 @@ body{
 .auth-btn.primary:hover{background:var(--blue-soft);box-shadow:0 6px 18px -4px rgba(3,34,239,0.75);color:var(--white);}
 
 .auth-form,.user-dropdown{
-  position:absolute;top:calc(100% + 14px);left:0;z-index:6;width:268px;
+  position:absolute;top:calc(100% + 14px);right:0;z-index:6;width:268px;
   background:linear-gradient(155deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
   border:1px solid var(--glass-border);border-radius:22px;padding:22px;
   backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
@@ -210,6 +210,43 @@ body{
 .track-row button{background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px;line-height:1;padding:3px 7px;border-radius:7px;transition:background .2s,color .2s;}
 .track-row button:hover{background:rgba(255,255,255,0.08);color:var(--white);}
 .empty-list{font-size:11px;color:var(--dim);padding:8px 4px;font-style:italic;}
+
+.user-dropdown{width:236px;padding:14px 14px 10px;}
+button.dropdown-item{width:100%;background:none;border:none;font-family:'Inter',sans-serif;text-align:left;}
+.about-text{padding:2px 4px 6px;}
+.about-lead{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;line-height:1.35;color:var(--white);margin:0 0 16px;}
+.about-text p{font-size:14px;line-height:1.75;color:rgba(255,255,255,0.78);margin:0 0 14px;}
+.about-text p.about-close{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;color:var(--white);margin:22px 0 4px;}
+.about-link{color:#6f7fff;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(111,127,255,0.4);transition:color .2s,border-color .2s;}
+.about-link:hover{color:#97a3ff;border-color:#97a3ff;}
+
+
+.list-modal{
+  position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:rgba(4,5,10,0.45);
+  backdrop-filter:blur(14px) saturate(130%);-webkit-backdrop-filter:blur(14px) saturate(130%);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .3s ease, visibility .3s ease;
+}
+.list-modal.open{opacity:1;visibility:visible;pointer-events:auto;}
+.list-modal-panel{
+  width:min(440px,100%);max-height:min(620px,80vh);display:flex;flex-direction:column;
+  background:linear-gradient(155deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+  border:1px solid var(--glass-border);border-radius:26px;padding:24px 22px 18px;
+  backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+  box-shadow:0 40px 80px -20px rgba(0,0,0,0.75), 0 1px 0 rgba(255,255,255,0.14) inset, 0 0 40px -12px rgba(3,34,239,0.4);
+  transform:translateY(14px) scale(.97);
+  transition:transform .4s cubic-bezier(.19,1,.22,1);
+}
+.list-modal.open .list-modal-panel{transform:translateY(0) scale(1);}
+.list-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 4px;}
+.list-modal-title{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;color:var(--white);}
+.list-modal-close{width:32px;height:32px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;}
+.list-modal-close:hover{background:rgba(255,255,255,0.14);}
+.list-modal-close svg{width:14px;height:14px;stroke:var(--white);fill:none;}
+.list-modal-body{overflow-y:auto;padding:0 4px 6px 0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.2) transparent;}
+.list-modal-body::-webkit-scrollbar{width:6px;}
+.list-modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.18);border-radius:6px;}
 
 .collapse{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .5s cubic-bezier(.19,1,.22,1), opacity .35s ease;}
 .collapse.open{grid-template-rows:1fr;opacity:1;}
@@ -301,6 +338,7 @@ h1:focus{background:rgba(255,255,255,0.06);}
 
 <div class="auth-widget" id="authWidget">
   <div id="authButtons">
+    <button class="auth-btn" id="showAboutBtn"><span>Sobre</span></button>
     <button class="auth-btn" id="showLoginBtn">
       <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10,17 15,12 10,7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
       <span>Login</span>
@@ -334,19 +372,26 @@ h1:focus{background:rgba(255,255,255,0.06);}
       <svg class="chev" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="6,9 12,15 18,9"/></svg>
     </button>
     <div class="user-dropdown" id="userDropdown">
-      <div class="dropdown-section-title">Playlists</div>
-      <div id="playlistList"></div>
-      <button class="dropdown-action" id="newPlaylistBtn">
-        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nova playlist
-      </button>
-      <div class="dropdown-section-title">Histórico</div>
-      <div id="historyList"></div>
+      <button class="dropdown-item" id="menuPlaylists"><span>Playlists</span><span class="count" id="playlistsCount"></span></button>
+      <button class="dropdown-item" id="menuHistory"><span>Histórico</span><span class="count" id="historyCount"></span></button>
+      <button class="dropdown-item" id="menuAbout"><span>Sobre nós</span></button>
       <button class="dropdown-action logout" id="logoutBtn">
         <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sair
       </button>
     </div>
+  </div>
+</div>
+
+<div class="list-modal" id="listModal">
+  <div class="list-modal-panel">
+    <div class="list-modal-head">
+      <div class="list-modal-title" id="listModalTitle"></div>
+      <button class="list-modal-close" id="listModalClose" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="list-modal-body" id="listModalBody"></div>
   </div>
 </div>
 
@@ -603,10 +648,9 @@ const userChipWrap=document.getElementById('userChipWrap');
 const userChip=document.getElementById('userChip');
 const userDropdown=document.getElementById('userDropdown');
 const userEmailLabel=document.getElementById('userEmailLabel');
-const playlistList=document.getElementById('playlistList');
-const historyList=document.getElementById('historyList');
-const newPlaylistBtn=document.getElementById('newPlaylistBtn');
 const logoutBtn=document.getElementById('logoutBtn');
+const playlistsCount=document.getElementById('playlistsCount');
+const historyCount=document.getElementById('historyCount');
 const addToPlaylistRow=document.getElementById('addToPlaylistRow');
 const addToPlaylistSelect=document.getElementById('addToPlaylistSelect');
 
@@ -704,21 +748,34 @@ function syncAddToPlaylistSelect(){
   addToPlaylistSelect.value = found ? String(found.id) : '';
 }
 
+function buildPlaylistRow(pl){
+  const row=document.createElement('div');
+  row.className='dropdown-item';
+  const n=(pl.track_ids||[]).length;
+  const name=document.createElement('span'); name.textContent=pl.name;
+  const count=document.createElement('span'); count.className='count'; count.textContent=`${n} faixa${n!==1?'s':''}`;
+  row.append(name,count);
+  row.addEventListener('click', ()=>togglePlaylistTracks(row, pl));
+  return row;
+}
+
+function buildHistoryRow(item){
+  const row=document.createElement('div');
+  row.className='dropdown-item';
+  const t=document.createElement('span'); t.textContent=item.title;
+  row.appendChild(t);
+  row.addEventListener('click', ()=>loadTrackIntoPlayer(item));
+  return row;
+}
+
 async function refreshPlaylists(){
   if(!currentUser) return;
   const {data:lists, error}=await sb.from('playlists').select('*').order('created_at',{ascending:false});
   if(error){ console.error(error); return; }
   playlistsCache=lists;
-  playlistList.innerHTML='';
+  playlistsCount.textContent=lists.length||'';
   addToPlaylistSelect.innerHTML='<option value="">Adicionar em...</option>';
-  if(!lists.length){ playlistList.innerHTML='<div class="empty-list">Nenhuma playlist ainda.</div>'; }
   lists.forEach(pl=>{
-    const row=document.createElement('div');
-    row.className='dropdown-item';
-    const n=(pl.track_ids||[]).length;
-    row.innerHTML=`<span>${pl.name}</span><span class="count">${n} faixa${n!==1?'s':''}</span>`;
-    row.addEventListener('click', ()=>togglePlaylistTracks(row, pl));
-    playlistList.appendChild(row);
     const opt=document.createElement('option');
     opt.value=pl.id; opt.textContent=pl.name;
     addToPlaylistSelect.appendChild(opt);
@@ -727,11 +784,14 @@ async function refreshPlaylists(){
   newOpt.value='__new__'; newOpt.textContent='+ Criar nova playlist';
   addToPlaylistSelect.appendChild(newOpt);
   syncAddToPlaylistSelect();
+  refreshOpenModal();
 }
 
+const expandedPlaylists=new Set();
 function togglePlaylistTracks(row, pl){
   const existing=row.nextElementSibling;
-  if(existing && existing.classList.contains('playlist-tracks')){ existing.remove(); return; }
+  if(existing && existing.classList.contains('playlist-tracks')){ existing.remove(); expandedPlaylists.delete(pl.id); return; }
+  expandedPlaylists.add(pl.id);
   const wrap=document.createElement('div');
   wrap.className='playlist-tracks';
   const ids=pl.track_ids||[];
@@ -740,27 +800,29 @@ function togglePlaylistTracks(row, pl){
     const h=historyCache.find(x=>x.id===hid);
     const tr=document.createElement('div');
     tr.className='track-row';
-    tr.innerHTML=`<span>${h?h.title:'(removida)'}</span><button title="Tocar">▶</button><button title="Remover">×</button>`;
-    const [playBtnEl,removeBtnEl]=tr.querySelectorAll('button');
-    playBtnEl.addEventListener('click', async ev=>{ ev.stopPropagation(); if(h) await loadTrackIntoPlayer(h); });
-    removeBtnEl.addEventListener('click', async ev=>{
+    const t=document.createElement('span'); t.textContent=h?h.title:'(removida)';
+    const playB=document.createElement('button'); playB.title='Tocar'; playB.textContent='▶';
+    const remB=document.createElement('button'); remB.title='Remover'; remB.textContent='×';
+    tr.append(t,playB,remB);
+    playB.addEventListener('click', async ev=>{ ev.stopPropagation(); if(h) await loadTrackIntoPlayer(h); });
+    remB.addEventListener('click', async ev=>{
       ev.stopPropagation();
       const newIds=ids.filter(x=>x!==hid);
       await sb.from('playlists').update({track_ids:newIds}).eq('id', pl.id);
       pl.track_ids=newIds;
-      refreshPlaylists();
+      await refreshPlaylists();
     });
     wrap.appendChild(tr);
   });
   row.after(wrap);
 }
 
-newPlaylistBtn.addEventListener('click', async ()=>{
+async function createPlaylist(){
   const name=prompt('Nome da playlist:');
   if(!name) return;
   await sb.from('playlists').insert({name, track_ids:[]});
   refreshPlaylists();
-});
+}
 
 addToPlaylistSelect.addEventListener('change', async ()=>{
   const val=addToPlaylistSelect.value;
@@ -781,19 +843,77 @@ addToPlaylistSelect.addEventListener('change', async ()=>{
 
 async function refreshHistory(){
   if(!currentUser) return;
-  const {data:items, error}=await sb.from('history').select('*').order('created_at',{ascending:false}).limit(30);
+  const {data:items, error}=await sb.from('history').select('*').order('created_at',{ascending:false}).limit(200);
   if(error){ console.error(error); return; }
   historyCache=items;
-  historyList.innerHTML='';
-  if(!items.length){ historyList.innerHTML='<div class="empty-list">Nada no histórico ainda.</div>'; return; }
-  items.forEach(item=>{
-    const row=document.createElement('div');
-    row.className='dropdown-item';
-    row.innerHTML=`<span>${item.title}</span>`;
-    row.addEventListener('click', ()=>loadTrackIntoPlayer(item));
-    historyList.appendChild(row);
-  });
+  historyCount.textContent=items.length||'';
+  refreshOpenModal();
 }
+
+// ---------- popup (shared by Playlists, Histórico and Sobre nós) ----------
+const listModal=document.getElementById('listModal');
+const listModalTitle=document.getElementById('listModalTitle');
+const listModalBody=document.getElementById('listModalBody');
+let modalFill=null;
+function openListModal(title, fill){
+  listModalTitle.textContent=title;
+  modalFill=fill;
+  listModalBody.innerHTML='';
+  fill(listModalBody);
+  userDropdown.classList.remove('open'); userChip.classList.remove('open');
+  listModal.classList.add('open');
+}
+function refreshOpenModal(){
+  if(!modalFill || !listModal.classList.contains('open')) return;
+  const top=listModalBody.scrollTop;
+  listModalBody.innerHTML='';
+  modalFill(listModalBody);
+  listModalBody.scrollTop=top;
+}
+function closeListModal(){ listModal.classList.remove('open'); }
+listModal.addEventListener('click', e=>{ if(e.target===listModal) closeListModal(); });
+document.getElementById('listModalClose').addEventListener('click', closeListModal);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeListModal(); });
+
+function emptyNote(box, text){
+  const e=document.createElement('div'); e.className='empty-list'; e.textContent=text; box.appendChild(e);
+}
+function fillPlaylists(box){
+  if(!playlistsCache.length) emptyNote(box,'Nenhuma playlist ainda.');
+  playlistsCache.forEach(pl=>{
+    const row=buildPlaylistRow(pl);
+    box.appendChild(row);
+    if(expandedPlaylists.has(pl.id)) togglePlaylistTracks(row, pl);
+  });
+  const add=document.createElement('button');
+  add.className='dropdown-action';
+  add.innerHTML='<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova playlist';
+  add.addEventListener('click', createPlaylist);
+  box.appendChild(add);
+}
+function fillHistory(box){
+  if(!historyCache.length){ emptyNote(box,'Nada no histórico ainda.'); return; }
+  historyCache.forEach(item=>box.appendChild(buildHistoryRow(item)));
+}
+function fillAbout(box){
+  const wrap=document.createElement('div'); wrap.className='about-text';
+  const p=(text,cls)=>{ const el=document.createElement('p'); if(cls) el.className=cls; el.textContent=text; wrap.appendChild(el); return el; };
+  p('Música é o único lugar onde cabe tudo que a gente não sabe dizer.','about-lead');
+  p('Tem dia que ela precisa ir mais devagar, pra doer menos. Tem dia que precisa acelerar, pra caber o que não cabe. Tem dia que só um grave batendo no peito resolve.');
+  p('O Ouce nasceu dessa vontade simples: mexer no som até ele virar seu. Sem anúncio no meio do refrão. Sem ninguém decidindo como a sua música deveria soar.');
+  const who=p('Foi criado pelo ');
+  const a=document.createElement('a');
+  a.className='about-link'; a.href='https://bit.ly/xmqr'; a.target='_blank'; a.rel='noopener noreferrer'; a.textContent='xMqR';
+  who.appendChild(a);
+  who.appendChild(document.createTextNode(', pra que ninguém precise ouvir a mesma música do mesmo jeito duas vezes.'));
+  p('Aqui o controle é seu. A gente só segura a porta.');
+  p('Ouça. Do seu jeito.','about-close');
+  box.appendChild(wrap);
+}
+document.getElementById('menuPlaylists').addEventListener('click', ()=>openListModal('Playlists', fillPlaylists));
+document.getElementById('menuHistory').addEventListener('click', ()=>openListModal('Histórico', fillHistory));
+document.getElementById('menuAbout').addEventListener('click', ()=>openListModal('Sobre nós', fillAbout));
+document.getElementById('showAboutBtn').addEventListener('click', ()=>openListModal('Sobre nós', fillAbout));
 
 async function loadTrackIntoPlayer(item){
   const {data:blob, error}=await sb.storage.from('audio').download(item.storage_path);
@@ -816,6 +936,7 @@ async function loadTrackIntoPlayer(item){
   if(currentUser) addToPlaylistRow.style.display='flex';
   syncAddToPlaylistSelect();
   userDropdown.classList.remove('open'); userChip.classList.remove('open');
+  closeListModal();
 }
 
 async function saveToHistory(){
