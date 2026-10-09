@@ -45,6 +45,7 @@ body{
   overflow-x:hidden;position:relative;
 }
 body.loading{overflow:hidden;height:100vh;}
+body.loading .site-footer{visibility:hidden;}
 .stage{
   position:relative;min-height:100vh;min-height:100svh;box-sizing:border-box;
   display:flex;align-items:center;justify-content:center;padding:32px 16px;
@@ -525,6 +526,10 @@ h1:focus{background:rgba(255,255,255,0.06);}
 <audio id="audio"></audio>
 
 <script>
+// always start at the top: the browser would otherwise restore the old scroll position under the intro
+if('scrollRestoration' in history) history.scrollRestoration='manual';
+window.scrollTo(0,0);
+
 // intro splash: big logo, "by xMqR", cycling status messages, then reveal
 (function(){
   const sub=document.getElementById('splashSub');
