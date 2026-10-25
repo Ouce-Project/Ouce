@@ -27,7 +27,7 @@
   --dim: #a3a5ad;
   --danger: #ff7a7a;
 
-  /* a cor do site: o JS troca estas quatro conforme a imagem do disco ou a escolha do usuário */
+
   --accent: #0322ef;
   --accent-rgb: 3, 34, 239;
   --accent-soft: #3a4cff;
@@ -62,7 +62,6 @@ h1, h2, p { margin: 0; }
 }
 .icon.filled { fill: currentColor; stroke: none; }
 
-/* ---------- vidro ---------- */
 .glass {
   background: linear-gradient(155deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -72,7 +71,7 @@ h1, h2, p { margin: 0; }
     inset 0 -24px 40px -30px rgba(var(--accent-rgb), 0.6);
 }
 
-/* ---------- fundo ---------- */
+
 .bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
 .bg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.26; }
 
@@ -83,7 +82,7 @@ h1, h2, p { margin: 0; }
 }
 @keyframes breathe { from { opacity: 0.75; } to { opacity: 1; } }
 
-/* ---------- introdução ---------- */
+
 .intro {
   position: fixed; inset: 0; z-index: 100;
   display: grid; place-content: center; justify-items: center; gap: 28px;
@@ -109,7 +108,7 @@ h1, h2, p { margin: 0; }
 
 body.loading .stage, body.loading .site-footer { opacity: 0; visibility: hidden; }
 
-/* ---------- botões e campos ---------- */
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 20px; border: 0; border-radius: 999px;
@@ -165,7 +164,7 @@ input[type='range']:disabled { opacity: 0.4; }
 
 .divider { height: 1px; margin: 18px 0; background: rgba(255, 255, 255, 0.1); }
 
-/* ---------- layout ---------- */
+
 .stage {
   position: relative; z-index: 1;
   min-height: 100vh; min-height: 100svh;
@@ -175,7 +174,7 @@ input[type='range']:disabled { opacity: 0.4; }
 .stage.collapsed { --menu-w: 0px; }
 .main { position: relative; display: grid; place-items: center; min-width: 0; padding: 24px 8px; }
 
-/* ---------- menu lateral ---------- */
+
 .sidebar-wrap { position: relative; min-width: 0; height: calc(100svh - 32px); }
 .sidebar {
   width: 260px; height: 100%; padding: 24px 18px 20px; border-radius: 26px;
@@ -223,7 +222,7 @@ input[type='range']:disabled { opacity: 0.4; }
 .sidebar-foot .divider { margin-top: 0; }
 .sidebar-foot img { display: block; height: 26px; width: auto; margin: 0 auto; opacity: 0.9; }
 
-/* ---------- player ---------- */
+
 .player-row { display: flex; align-items: center; gap: 16px; width: min(1100px, 100%); }
 .player {
   flex: 1; min-width: 0; padding: 36px 40px; border-radius: 30px;
@@ -310,7 +309,7 @@ input[type='range']:disabled { opacity: 0.4; }
 .bottom-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 36px; }
 .vol { display: flex; align-items: center; gap: 10px; width: 170px; color: var(--dim); }
 
-/* ---------- popups ---------- */
+
 .modal {
   position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px;
   background: rgba(8, 8, 10, 0.55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
@@ -386,7 +385,7 @@ input[type='range']:disabled { opacity: 0.4; }
 .text-link { color: var(--accent-soft); font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(var(--accent-rgb), 0.5); }
 .text-link:hover { border-bottom-color: var(--accent-soft); }
 
-/* ---------- rodapé ---------- */
+
 
 .site-footer { position: relative; z-index: 2; background: #202125; padding: 56px 24px 28px; transition: opacity 0.7s ease 0.15s; }
 .footer-inner { max-width: 980px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: 56px; align-items: start; }
@@ -408,7 +407,7 @@ input[type='range']:disabled { opacity: 0.4; }
 .foot-link { padding: 0; border: 0; background: none; font-size: 13px; color: rgba(255, 255, 255, 0.72); text-decoration: none; transition: color 0.2s; }
 .foot-link:hover { color: #fff; text-decoration: underline; }
 
-/* ---------- modo foco ---------- */
+
 body.focus .sidebar-wrap, body.focus .menu-fab, body.focus .site-footer, body.focus #adjustBtn,
 body.focus #uploadBtn, body.focus #postBtn, body.focus #downloadBtn { display: none; }
 body.focus .stage { grid-template-columns: minmax(0, 1fr); }
@@ -419,7 +418,7 @@ body.focus .disc-stage { max-width: 360px; }
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.35s; }
 
 
-/* seta discreta pra sair do modo foco; ao sair, o botão volta ao normal */
+
 #focusBtn .i-exit { display: none; }
 body.focus #focusBtn .i-expand { display: none; }
 body.focus #focusBtn .i-exit { display: block; width: 18px; height: 18px; }
@@ -429,7 +428,7 @@ body.focus #focusBtn {
 }
 body.focus #focusBtn:hover, body.focus #focusBtn:focus-visible { opacity: 0.75; }
 
-/* ---------- biblioteca: mini caixa + disco ---------- */
+
 .row.with-disc { flex-direction: row; align-items: center; gap: 14px; }
 .row-text { display: flex; flex-direction: column; min-width: 0; }
 .mini { position: relative; flex-shrink: 0; width: 70px; height: 50px; }
@@ -449,7 +448,7 @@ body.focus #focusBtn:hover, body.focus #focusBtn:focus-visible { opacity: 0.75; 
 }
 .mini-disc::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, #0b0b0d 0 9%, rgba(255, 255, 255, 0.2) 10% 12%, transparent 13%); }
 
-/* ---------- modo postagem ---------- */
+
 .bottom-actions { display: flex; gap: 8px; }
 .post-bar {
   position: fixed; top: 16px; right: 16px; z-index: 70; display: flex; align-items: center; gap: 10px;
@@ -471,12 +470,12 @@ body.posting .stage { grid-template-columns: minmax(0, 1fr); }
 @keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
 @keyframes toast-out { to { opacity: 0; transform: translateY(-10px); } }
 
-/* ---------- seletor de tema ---------- */
+
 .seg { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.06); }
 .seg button { flex: 1; padding: 9px 12px; border: 0; border-radius: 10px; background: none; color: var(--dim); font-weight: 600; transition: background 0.2s, color 0.2s; }
 .seg button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); }
 
-/* ---------- tema abstrato: interface lisa, no estilo do rodapé ---------- */
+
 body.theme-abstract .glass { background: #202125; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: none; }
 body.theme-abstract .sidebar, body.theme-abstract .player, body.theme-abstract .modal-panel { border-radius: 12px; }
 body.theme-abstract .post-bar, body.theme-abstract .toast, body.theme-abstract .skip { border-radius: 10px; }
@@ -489,7 +488,7 @@ body.theme-abstract .case, body.theme-abstract .disc { box-shadow: none; }
 body.theme-abstract .bg-canvas { opacity: 0.55; }
 body.theme-abstract .bg-light { animation: none; opacity: 0.3; }
 
-/* ---------- telas pequenas ---------- */
+
 @media (max-width: 900px) {
   .stage { grid-template-columns: minmax(0, 1fr); }
   .sidebar-wrap { position: fixed; z-index: 60; top: 12px; left: 12px; bottom: 12px; width: min(86vw, 300px); height: auto; }
@@ -540,13 +539,13 @@ body.theme-abstract .bg-light { animation: none; opacity: 0.3; }
   </defs>
 </svg>
 
-<!-- fundo: luz vindo de baixo + bolhas grandes e lentas -->
+
 <div class="bg" aria-hidden="true">
   <canvas class="bg-canvas" id="bgCanvas"></canvas>
   <div class="bg-light"></div>
 </div>
 
-<!-- introdução -->
+
 <div class="intro" id="intro">
   <img class="intro-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAd4AAAB9CAYAAAAMYQI3AAAWfmNhQlgAABZ+anVtYgAAAB5qdW1kYzJwYQARABCAAACqADibcQNjMnBhAAAAFlhqdW1iAAAAR2p1bWRjMm1hABEAEIAAAKoAOJtxA3VybjpjMnBhOmU3N2Y1N2FkLWMyZTktNDJiNi04MTUzLTU4NmJhZmFlMmUyZgAAAAOTanVtYgAAAClqdW1kYzJhcwARABCAAACqADibcQNjMnBhLmFzc2VydGlvbnMAAAAAuGp1bWIAAABEanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5pbmdyZWRpZW50LnYzAAAAABhjMnNofz+aJNzQyMy0gaBeRuXeogAAAGxjYm9yo2lkYzpmb3JtYXRpaW1hZ2UvcG5namluc3RhbmNlSUR4LHhtcDppaWQ6OTIxZjBiYjAtNTNlMS00YTVmLWIxZTEtYjYzNmJmYzY1OTA0bHJlbGF0aW9uc2hpcGhwYXJlbnRPZgAAAeJqdW1iAAAAQWp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuYWN0aW9ucy52MgAAAAAYYzJzaL/yP036pgYpOh+dnlzC5igAAAGZY2JvcqJnYWN0aW9uc4KiZmFjdGlvbmtjMnBhLm9wZW5lZGpwYXJhbWV0ZXJzoWtpbmdyZWRpZW50c4GiY3VybHgtc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5pbmdyZWRpZW50LnYzZGhhc2hYIBeb/KhokFFswfUyIInaQE4xoMv/I/OO5lYS8uys7qFupGZhY3Rpb254HWNvbS5hbnRocm9waWMuY2xhdWRlLnByb3ZpZGVkanBhcmFtZXRlcnOheB9jb20uYW50aHJvcGljLm9yaWdpbi1jb25maWRlbmNlZ3Vua25vd25rZGVzY3JpcHRpb254ZkNsYXVkZSBwcm92aWRlZCB0aGlzIGZpbGUgYXQgdGhlIHJlcXVlc3Qgb2YgYSB1c2VyIGFuZCBtYXkgaGF2ZSBjcmVhdGVkIG9yIG1vZGlmaWVkIHRoZSBmaWxlIGNvbnRlbnRzLm1zb2Z0d2FyZUFnZW50oWRuYW1lZkNsYXVkZXJhbGxBY3Rpb25zSW5jbHVkZWT1AAAAyGp1bWIAAABAanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5oYXNoLmRhdGEAAAAAGGMyc2hv8GTPppeWAakwg8fnafkVAAAAgGNib3KlY2FsZ2ZzaGEyNTZjcGFkTQAAAAAAAAAAAAAAAABkaGFzaFgg6SGvxOZR3T/mHCyJ8CxhcJYqm1U5NqLSxD862jxMqAlkbmFtZW5qdW1iZiBtYW5pZmVzdGpleGNsdXNpb25zgaJlc3RhcnQYIWZsZW5ndGgZFooAAAI+anVtYgAAACdqdW1kYzJjbAARABCAAACqADibcQNjMnBhLmNsYWltLnYyAAAAAg9jYm9ypWNhbGdmc2hhMjU2aXNpZ25hdHVyZXhNc2VsZiNqdW1iZj0vYzJwYS91cm46YzJwYTplNzdmNTdhZC1jMmU5LTQyYjYtODE1My01ODZiYWZhZTJlMmYvYzJwYS5zaWduYXR1cmVqaW5zdGFuY2VJRHgseG1wOmlpZDoyZGQxNWE3ZC0yYzkyLTRlYWYtOGU4Ni1kODM4MzAxYmVhMjByY3JlYXRlZF9hc3NlcnRpb25zg6JjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggF5v8qGiQUWzB9TIgidpATjGgy/8j847mVhLy7KzuoW6iY3VybHgqc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5hY3Rpb25zLnYyZGhhc2hYICxU8oLCBWCqU6qJ/gj9+sxuGBhhNzjoEB2QLiPk+nAjomN1cmx4KXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaGFzaC5kYXRhZGhhc2hYIA+G+qwcNdh831AM2n73ryfiSOP4UZt5zC/gDBFOkz8udGNsYWltX2dlbmVyYXRvcl9pbmZvo2RuYW1lb0FudGhyb3BpYyBGaWxlc2d2ZXJzaW9uZTEuMC4wa3NwZWNWZXJzaW9uZTIuNC4wAAAQOGp1bWIAAAAoanVtZGMyY3MAEQAQgAAAqgA4m3EDYzJwYS5zaWduYXR1cmUAAAAQCGNib3LShFkCEqIBJhghWQIKMIICBjCCAY2gAwIBAgIUQOWgCu7COdC+uIP6BkIFPWdVEwAwCgYIKoZIzj0EAwMwSTEXMBUGA1UEChMOQW50aHJvcGljLCBQQkMxLjAsBgNVBAMTJUFudGhyb3BpYyBDb250ZW50IENyZWRlbnRpYWxzIFJvb3QgQ0EwHhcNMjYwODA3MTg0MzU2WhcNMjgwODA2MTk0MzU2WjBEMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEpMCcGA1UEAxMgQW50aHJvcGljIENsYXVkZSBDb250ZW50IFNpZ25pbmcwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASYegpry1AYBRTVNL1CpTlbROnY3dey+UrsF9C3phYrATN3ZHf93Mo8RQN0KOUuOn19P4oWNFWe5n2/She9N7eTo1gwVjAOBgNVHQ8BAf8EBAMCB4AwFQYDVR0lBA4wDAYKKwYBBAGD6F4CATAMBgNVHRMBAf8EAjAAMB8GA1UdIwQYMBaAFM5R4gSBTmRbI/jjxM+aPpzB11zCMAoGCCqGSM49BAMDA2cAMGQCMDFzHRSeAXrSy1WOzkbhPZ6Km2wGTmZ/2gK18k8BQGXyqz88Rdrz6CTX9flAnYNVxgIwcF9c3fVhqmJKpi+UhasNUMko69cyX6STPfta3Q8EjyzDjzoyrol46FP6VFHhvUcJoWNwYWRZDZ4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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" alt="Ouce">
   <p class="intro-text" aria-label="O Ouce é um espaço pra ouvir do seu jeito. Porque toda música muda quando passa por você."><span id="typed" aria-hidden="true"></span></p>
@@ -699,7 +698,7 @@ body.theme-abstract .bg-light { animation: none; opacity: 0.3; }
   </div>
 </div>
 
-<!-- painéis que vivem aqui até serem abertos num popup -->
+
 <div id="holder" hidden>
   <div class="adjust" id="adjustPanel">
     <div class="effect"><label for="slowed">Slowed</label><input type="range" id="slowed" data-effect="slowed" min="0" max="1" step="0.01" value="0" disabled><output id="slowedVal">0%</output></div>
@@ -736,18 +735,15 @@ body.theme-abstract .bg-light { animation: none; opacity: 0.3; }
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ===== config.js ===== */
-// A chave "anon" do Supabase é pública de propósito: quem protege os dados são as
-// regras por usuário (RLS) criadas em supabase/setup.sql. Nunca coloque a service_role aqui.
+
 const CONFIG = {
   supabaseUrl: 'https://ubvuclfiyzrrcqrxarty.supabase.co',
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVidnVjbGZpeXpycmNxcnhhcnR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExNTE4MDksImV4cCI6MjEwNjcyNzgwOX0.nYTmLJbe6rU9efAEKi7OmmaJ1pPIPT1qvI9Q_pol7m4',
 };
 
-/* ===== util.js ===== */
+
 const $ = (id) => document.getElementById(id);
 
-// Monta um elemento: h('button', { class: 'btn', onclick: fn }, 'texto')
 function h(tag, props = {}, ...children) {
   const node = document.createElement(tag);
   for (const [key, value] of Object.entries(props)) {
@@ -775,14 +771,14 @@ function formatTime(seconds) {
   return `${minutes}:${String(rest).padStart(2, '0')}`;
 }
 
-// Pinta a parte "cheia" dos sliders (a variável --p é lida no CSS)
+
 function paintRange(input) {
   const min = Number(input.min) || 0;
   const max = Number(input.max) || 100;
   input.style.setProperty('--p', `${((input.value - min) / (max - min)) * 100}%`);
 }
 
-// Título e descrição editáveis: Enter confirma, colar vira texto puro, vazio volta ao padrão
+
 function makeEditable(node, fallback, onCommit) {
   node.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); node.blur(); }
@@ -821,7 +817,7 @@ function blobToDataURL(blob) {
   });
 }
 
-// Recorta no centro, reduz e devolve um JPEG quadrado (disco e foto de perfil)
+
 async function squareJpeg(file, size, quality = 0.88) {
   const url = URL.createObjectURL(file);
   try {
@@ -840,7 +836,7 @@ async function dataUrlToBlob(url) {
   return (await fetch(url)).blob();
 }
 
-// Versão pequena de uma imagem quadrada (a miniatura do disco na biblioteca)
+
 async function downscale(dataUrl, size, quality = 0.8) {
   const img = await loadImage(dataUrl);
   const canvas = document.createElement('canvas');
@@ -859,12 +855,7 @@ function toast(text) {
 /* ===== db.js ===== */
 const db = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
 
-/* ===== theme.js ===== */
-// Cor do site. Existem duas camadas:
-//  - preferência: o azul do Ouce ou a cor que o usuário escolheu nas configurações (fica guardada);
-//  - automática: a cor tirada da imagem do disco. Ela pertence à música que está tocando,
-//    então some ao recarregar a página ou trocar de música.
-// Com a trava ligada, a imagem não troca mais a cor sozinha.
+
 const Theme = (() => {
   const DEFAULT = '#0322ef';
   const KEYS = { pref: 'ouce_pref_accent', lock: 'ouce_accent_lock' };
@@ -916,8 +907,7 @@ const Theme = (() => {
     return /^[0-9a-f]{6}$/i.test(value) ? `#${value.toLowerCase()}` : null;
   }
 
-  // Cor que "representa" a imagem: agrupa os pixels por matiz, dá mais peso aos vivos
-  // e ignora quase-preto e quase-branco. Se não sobrar cor marcante, usa um cinza claro.
+
   function pickAccent(img) {
     const size = 48;
     const canvas = document.createElement('canvas');
@@ -950,7 +940,7 @@ const Theme = (() => {
     return rgbToHex(hslToRgb(hue, 0.08, clamp(l, 0.6, 0.78)));
   }
 
-  // O ícone da aba é desenhado na hora com a cor atual
+
   function paintFavicon(hex, ink) {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = 64;
@@ -976,7 +966,7 @@ const Theme = (() => {
     const [r, g, b] = hexToRgb(hex);
     const [hue, s, l] = rgbToHsl(r, g, b);
     soft = rgbToHex(hslToRgb(hue, s, clamp(l + 0.14, 0, 0.78)));
-    // texto escuro em cima de cores muito claras
+
     const ink = (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.62 ? '#111111' : '#ffffff';
 
     const root = document.documentElement.style;
@@ -989,7 +979,7 @@ const Theme = (() => {
     events.dispatchEvent(new CustomEvent('change', { detail: hex }));
   }
 
-  // escolha manual (configurações): vira a preferência e vale até o usuário mudar
+
   function set(input) {
     const hex = normalizeHex(input);
     if (!hex) return false;
@@ -1003,7 +993,7 @@ const Theme = (() => {
   const isLocked = () => store.get(KEYS.lock) === '1';
   const setLocked = (value) => store.set(KEYS.lock, value ? '1' : '0');
 
-  // cor tirada da imagem do disco (não é guardada)
+
   function fromImage(img) {
     if (isLocked()) return;
     const hex = pickAccent(img);
@@ -1012,7 +1002,7 @@ const Theme = (() => {
     apply(hex);
   }
 
-  // a música mudou: volta pra preferência
+
   function clearAuto() {
     if (!auto) return;
     auto = null;
@@ -1026,12 +1016,11 @@ const Theme = (() => {
     apply(DEFAULT);
   }
 
-  // a chave antiga guardava até as cores automáticas; sai de cena pra não prender o site numa cor
-  try { localStorage.removeItem('ouce_accent'); } catch { /* ignora */ }
+
+  try { localStorage.removeItem('ouce_accent'); } catch {  }
   pref = normalizeHex(store.get(KEYS.pref) || '') || DEFAULT;
   apply(pref);
 
-  // estilo da interface: 'glass' (liquid glass) ou 'abstract' (liso, no estilo do rodapé). Fica guardado.
   const STYLE_KEY = 'ouce_style';
   let style = store.get(STYLE_KEY) === 'abstract' ? 'abstract' : 'glass';
   const applyStyle = () => document.body.classList.toggle('theme-abstract', style === 'abstract');
@@ -1045,18 +1034,16 @@ const Theme = (() => {
   return { events, current: () => accent, soft: () => soft, set, reset, fromImage, clearAuto, isLocked, setLocked, style: () => style, setStyle };
 })();
 
-/* ===== background.js ===== */
-// Bolhas do fundo. São desenhadas numa área minúscula (150 px de largura) e esticadas pelo CSS:
-// como o fundo é macio mesmo, o resultado é o mesmo de um filtro pesado, só que quase de graça.
+
 const Background = (() => {
   const canvas = $('bgCanvas');
   const g = canvas.getContext('2d');
-  if (!g) return; // sem canvas, o fundo fica só com a luz de baixo
+  if (!g) return; 
   const W = 150;
   const GRAY = [86, 88, 96];
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // centro (0..1), quanto anda, velocidade (rad/s), raio (fração da largura) e se pega a cor do site
+
   const blobs = [
     { x: 0.12, y: 0.10, ax: 0.26, ay: 0.20, fx: 0.16, fy: 0.12, p: 0.0, r: 0.30, tint: false },
     { x: 0.86, y: 0.22, ax: 0.24, ay: 0.26, fx: 0.13, fy: 0.19, p: 1.7, r: 0.27, tint: true },
@@ -1101,7 +1088,7 @@ const Background = (() => {
         const total = fTint + fGray;
         const alpha = smooth(0.85, 1.2, total);
         const mix = fTint / (total || 1);
-        const light = 0.8 + 0.35 * Math.min(1, total / 3); // miolo um pouco mais claro que a borda
+        const light = 0.8 + 0.35 * Math.min(1, total / 3); 
         data[i] = (GRAY[0] + (tint[0] - GRAY[0]) * mix) * light;
         data[i + 1] = (GRAY[1] + (tint[1] - GRAY[1]) * mix) * light;
         data[i + 2] = (GRAY[2] + (tint[2] - GRAY[2]) * mix) * light;
@@ -1122,7 +1109,7 @@ const Background = (() => {
 
   if (reduced) { draw(0); return; }
 
-  // ~24 quadros por segundo bastam pra algo lento, e não desenha com a aba escondida ou um popup aberto
+
   let last = 0;
   function frame(now) {
     requestAnimationFrame(frame);
@@ -1134,9 +1121,7 @@ const Background = (() => {
   requestAnimationFrame(frame);
 })();
 
-/* ===== modal.js ===== */
-// Popup único, reaproveitado por todas as telas (menu, ajustes, login, sobre nós).
-// "content" pode ser um nó pronto ou uma função que monta o conteúdo (assim dá pra atualizar).
+
 const Modal = (() => {
   const root = $('modal');
   const titleEl = $('modalTitle');
@@ -1149,13 +1134,13 @@ const Modal = (() => {
     bodyEl.replaceChildren(node);
   }
 
-  // Painéis que moram no HTML voltam pro lugar de origem quando o popup fecha
+
   function release() {
     if (view?.home) view.home.append(view.content);
     view = null;
   }
 
-  // listas montadas na hora (com discos girando) não precisam continuar vivas depois de fechar
+
   function clearLater() {
     setTimeout(() => { if (!view && !root.classList.contains('open')) bodyEl.replaceChildren(); }, 320);
   }
@@ -1196,8 +1181,7 @@ const Modal = (() => {
   return { open, close, refresh, isOpen };
 })();
 
-/* ===== player.js ===== */
-// Tudo que toca som: áudio, efeitos, equalizador, disco e download do áudio modificado.
+
 const Player = (() => {
   const audio = $('audio');
   const playerEl = $('player');
@@ -1279,7 +1263,7 @@ const Player = (() => {
 
   sliders.forEach((slider) => {
     slider.addEventListener('input', () => {
-      // slowed e speed up não combinam: mexer num zera o outro
+ 
       const other = { slowed: 'speedup', speedup: 'slowed' }[slider.dataset.effect];
       if (other && Number(slider.value) > 0) sliders.find((s) => s.dataset.effect === other).value = 0;
       refreshLabels();
@@ -1401,7 +1385,7 @@ const Player = (() => {
   new ResizeObserver(fitCanvas).observe(canvas);
   Theme.events.addEventListener('change', startLoop);
 
-  // agrupa as frequências em escala logarítmica pra o agudo também mexer
+
   function logBands(binCount, count) {
     const top = binCount - 1;
     const span = Math.log2(top);
@@ -1412,7 +1396,7 @@ const Player = (() => {
     });
   }
 
-  // Só continua pedindo quadros enquanto toca ou enquanto as barras ainda estão assentando
+ 
   function frame() {
     const w = canvas.clientWidth;
     const hgt = canvas.clientHeight;
@@ -1453,11 +1437,11 @@ const Player = (() => {
   }
   startLoop();
 
-  /* ---------- disco ---------- */
+
   const discFace = $('discFace');
   const discInput = $('discInput');
 
-  // A imagem e a cor ficam com a música: ao trocar de faixa (ou recarregar) o disco volta ao normal
+
   async function setDisc(url) {
     state.disc = url;
     discFace.style.backgroundImage = `url("${url}")`;
@@ -1484,14 +1468,14 @@ const Player = (() => {
       alert('Não consegui abrir essa imagem.');
     }
   });
-  try { localStorage.removeItem('ouce_disc'); } catch { /* a versão anterior guardava a imagem aqui */ }
+  try { localStorage.removeItem('ouce_disc'); } catch {  }
 
-  /* ---------- reprodução ---------- */
+
   const seek = $('seek');
   let scrubbing = false;
 
   function load({ blob, title, desc, settings, historyId = null, cover = null }) {
-    if (state.file) clearDisc(); // a foto e a cor ficam com a música anterior
+    if (state.file) clearDisc(); 
     if (state.url) URL.revokeObjectURL(state.url);
     state.file = blob;
     state.historyId = historyId;
@@ -1597,15 +1581,14 @@ const Player = (() => {
   };
 })();
 
-/* ===== account.js ===== */
-// Conta (Supabase), foto de perfil e tudo que fica guardado: histórico, biblioteca e playlists.
+
 const Account = (() => {
   let user = null;
   let playlists = [];
-  let tracks = []; // tudo que o usuário já salvou, do mais novo pro mais antigo
+  let tracks = []; 
   let saveChain = Promise.resolve();
   let saveTimer = null;
-  const expanded = new Set(); // playlists abertas no popup
+  const expanded = new Set(); 
 
   const els = {
     avatar: $('avatar'), avatarInput: $('avatarInput'),
@@ -1613,7 +1596,7 @@ const Account = (() => {
     footLogin: $('footLogin'), playlistField: $('playlistField'), playlistSelect: $('playlistSelect'),
   };
 
-  /* ---------- login e cadastro ---------- */
+ 
   function friendlyError(message) {
     if (/invalid login credentials/i.test(message)) return 'Email ou senha incorretos.';
     if (/already registered/i.test(message)) return 'Esse email já tem cadastro. Faça login.';
@@ -1681,7 +1664,7 @@ const Account = (() => {
 
   db.auth.onAuthStateChange((_event, session) => {
     const next = session?.user;
-    if (next && user?.id === next.id) { user = next; return; } // renovação de token, nada a refazer
+    if (next && user?.id === next.id) { user = next; return; } 
     if (next) signedIn(next); else signedOut();
   });
   db.auth.getSession().then(({ data }) => { if (data.session && !user) signedIn(data.session.user); });
@@ -1837,7 +1820,7 @@ const Account = (() => {
         h('span', { class: 'row-sub' }, item.artist || '')));
   }
 
-  // A biblioteca só recebe o que o usuário publica pelo modo postagem; o histórico é que guarda tudo
+ 
   function libraryView() {
     if (!user) return guestView('Entre para guardar a sua biblioteca de músicas.');
     const posts = tracks.filter((t) => t.published);
@@ -1883,7 +1866,7 @@ const Account = (() => {
   els.playlistSelect.addEventListener('change', async (e) => {
     const value = e.target.value;
     if (!value) return;
-    await saveChain; // espera a música terminar de ser salva pra ter um id
+    await saveChain;
     const trackId = Player.current().historyId;
     if (!trackId) { syncPlaylistSelect(); return; }
     if (value === '__new__') {
@@ -1919,7 +1902,7 @@ const Account = (() => {
     await loadLibrary();
   }
 
-  // os salvamentos entram numa fila, assim nunca criam duas linhas pra mesma música
+ 
   const enqueueSave = () => { saveChain = saveChain.then(saveTrack).catch(console.error); };
   function queueSave() {
     if (!user || !Player.current().file) return;
@@ -1929,7 +1912,7 @@ const Account = (() => {
 
   async function publishCurrent() {
     if (!user) throw new Error('sem login');
-    enqueueSave(); // garante que a música já tem uma linha no banco
+    enqueueSave(); 
     await saveChain;
     const now = Player.current();
     if (!now.historyId) throw new Error('música não foi salva');
@@ -1966,9 +1949,7 @@ const Account = (() => {
   };
 })();
 
-/* ===== post.js ===== */
-// Modo postagem: o usuário ajusta foto, efeitos, título e descrição e publica na biblioteca.
-// Enquanto está ativo, o menu fica fora de alcance pra ninguém sair no meio sem querer.
+
 const Post = (() => {
   const publishBtn = $('postPublish');
 
@@ -1982,7 +1963,7 @@ const Post = (() => {
 
   $('postBtn').addEventListener('click', enter);
   $('postCancel').addEventListener('click', leave);
-  Player.events.addEventListener('load', leave); // trocar de música encerra a postagem
+  Player.events.addEventListener('load', leave); 
 
   publishBtn.addEventListener('click', async () => {
     const label = publishBtn.textContent;
@@ -2004,8 +1985,7 @@ const Post = (() => {
   return { enter, leave };
 })();
 
-/* ===== stats.js ===== */
-// Contadores do rodapé. As contas vêm do Supabase (funções bump_stat e get_site_stats).
+
 (() => {
   const els = { users: $('statUsers'), plays: $('statPlays'), visits: $('statVisits') };
   let data = null;
@@ -2056,14 +2036,12 @@ const Post = (() => {
   load();
 })();
 
-/* ===== main.js ===== */
-// Montagem da tela: introdução, menu lateral, modo foco e os popups.
+
 (() => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mobile = window.matchMedia('(max-width: 900px)');
   const stage = $('stage');
 
-  /* ---------- introdução ---------- */
   const INTRO_TEXT = 'O Ouce é um espaço pra ouvir do seu jeito. Porque toda música muda quando passa por você.';
   const intro = $('intro');
   const typed = $('typed');
@@ -2079,7 +2057,6 @@ const Post = (() => {
     document.body.classList.remove('loading');
   }
 
-  // digita devagar e dá um respiro nas pontuações
   function type(count = 0) {
     typed.textContent = INTRO_TEXT.slice(0, count);
     if (count >= INTRO_TEXT.length) { later(finishIntro, 1400); return; }
@@ -2166,7 +2143,7 @@ const Post = (() => {
         lock));
   }
 
-  /* ---------- sobre nós ---------- */
+ 
   function aboutView() {
     const link = h('a', { class: 'text-link', href: 'https://bit.ly/xmqr', target: '_blank', rel: 'noopener noreferrer' }, 'xMqR');
     return h('div', { class: 'about' },
