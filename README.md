@@ -20,7 +20,7 @@ Player de música no navegador com slowed, reverb e speed up em tempo real. Cada
 Requer Node.js 20+ (só para servir os arquivos) e um projeto no [Supabase](https://supabase.com).
 
 ```bash
-git clone https://github.com/SEU-USUARIO/ouce
+git clone https://github.com/xMqRs/ouce
 cd ouce
 cp js/config.example.js js/config.js
 ```
