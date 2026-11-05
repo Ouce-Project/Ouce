@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0330ef">
 <link rel="icon" id="favicon" href="data:,">
 <title>Ouce</title>
@@ -14,11 +14,12 @@
 <style>
 :root{--accent:#0330ef;--accent-rgb:3 48 239;--accent-hi:#3a5cff;--accent-lo:#0220b8;--on-accent:#fff;--ink:#0B0B0B;--panel:#0F0F0F;--line:#1d1d1d;--txt:#f1f2f6;--mute:#80838f;--ease:cubic-bezier(.7,0,.2,1)}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
+html,body{height:100%;-webkit-text-size-adjust:100%}
+body{height:100dvh}
 body{background:var(--ink);color:var(--txt);font:15px/1.5 'Bricolage Grotesque',system-ui,sans-serif;display:flex;overflow:hidden}
 #bars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(60vmax 60vmax at 35% 50%,rgb(var(--accent-rgb)/calc(.08 + var(--pulse,0)*.3)),transparent 60%)}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;position:relative;overflow:hidden}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;font:inherit;color:inherit;background:none;border:0;cursor:pointer;position:relative;overflow:hidden}
 input{font:inherit;color:inherit}
 ul{list-style:none}
 i{line-height:1}
@@ -29,7 +30,7 @@ i{line-height:1}
 @keyframes rise{to{transform:none}}
 @keyframes curtain{to{clip-path:inset(0 0 100% 0);visibility:hidden}}
 
-.rail{width:84px;flex:none;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;align-items:center;padding:22px 0;gap:6px;z-index:5}
+.rail{overflow-y:auto;scrollbar-width:none;width:84px;flex:none;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;align-items:center;padding:22px 0;gap:6px;z-index:5}
 .logo{writing-mode:vertical-rl;transform:rotate(180deg);font-weight:800;font-size:26px;letter-spacing:-.04em}
 .rail .end{margin-top:auto;display:grid;gap:12px;justify-items:center}
 .logo::first-letter{color:var(--accent-hi)}
@@ -42,20 +43,20 @@ i{line-height:1}
 .rail .add{margin-top:0;width:46px;height:46px;border-radius:50%;border:1px dashed #333;font-size:20px;color:var(--mute);transition:all .3s}
 .rail .add:hover{border-color:var(--accent-hi);color:#fff;transform:rotate(90deg)}
 
-main{flex:1;position:relative;min-width:0;z-index:1}
-.view{position:absolute;inset:0;overflow:auto;display:none;padding:34px clamp(20px,4vw,56px)}
+main{flex:1;position:relative;min-width:0;min-height:0;z-index:1}
+.view{position:absolute;inset:0;overflow:auto;overflow-x:hidden;overscroll-behavior:contain;display:none;padding:34px clamp(20px,4vw,56px)}
 .view.on{display:block;animation:wipe .7s var(--ease)}
 @keyframes wipe{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0)}}
 
 
 
-#v-player.on{display:grid;place-items:center}
-.deck{display:grid;grid-template-columns:minmax(300px,420px) minmax(280px,440px);gap:clamp(28px,5vw,72px);align-items:center;justify-content:center;width:100%;min-height:100%}
+#v-player.on{display:flex}
+.deck{display:grid;grid-template-columns:minmax(300px,clamp(380px,28vw,500px)) minmax(280px,clamp(380px,27vw,480px));gap:clamp(28px,4vw,72px);align-items:center;justify-content:center;width:100%;margin:auto}
 .card{position:relative;display:grid;gap:16px;padding:22px;border-radius:30px;border:1px solid var(--line);background:linear-gradient(180deg,rgb(var(--accent-rgb)/.24),var(--panel) 64%);box-shadow:0 40px 100px -40px rgb(var(--accent-rgb)/.55);transition:padding .6s var(--ease),background .6s,box-shadow .6s}
 .top{display:flex;align-items:center;justify-content:space-between}
 .round{width:38px;height:38px;border-radius:50%;font-size:19px;color:var(--mute);background:rgb(0 0 0/.3);transition:all .3s var(--ease)}
 .round:hover{color:#fff;transform:scale(1.12) rotate(-6deg)}
-.sleeve{position:relative;width:100%;aspect-ratio:1;margin-top:66px;perspective:900px}
+.sleeve{position:relative;width:clamp(150px,calc(100dvh - 470px),100%);justify-self:center;aspect-ratio:1;margin-top:clamp(40px,7dvh,66px);perspective:900px}
 .tilt{position:absolute;inset:0;transition:transform .45s var(--ease)}
 .art{position:absolute;inset:0;border-radius:22px;z-index:1;background:var(--cover,linear-gradient(135deg,var(--accent-lo),#0b0b0b));display:grid;place-items:center;font-size:84px;color:rgb(255 255 255/.18);box-shadow:0 30px 70px -20px rgb(var(--accent-rgb)/.6),0 0 0 1px rgb(255 255 255/.06);overflow:hidden}
 .art::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgb(255 255 255/.14) 48%,transparent 60%);transform:translateX(-120%);animation:sheen 5s var(--ease) infinite}
@@ -72,11 +73,44 @@ main{flex:1;position:relative;min-width:0;z-index:1}
 .side{display:grid;gap:18px;min-width:0}
 .vrow{grid-template-columns:78px 1fr 52px}
 .focus-note{display:none}
-body.focus .rail,body.focus .side,body.focus .mini,body.focus .quick{display:none}
-body.focus .deck{grid-template-columns:minmax(0,min(540px,100%))}
-body.focus .card{padding:30px 28px;background:transparent;border-color:transparent;box-shadow:none}
-body.focus h1{font-size:clamp(30px,4.6vw,48px)}
+.pill,#fxBtn{display:none}
+.tbtns{display:flex;gap:10px}
+.pill{align-items:center;gap:12px;padding:9px 24px 9px 10px;border-radius:99px;justify-self:center;border:1px solid rgb(255 255 255/.14);background:color-mix(in srgb,var(--accent) 24%,#0b0b0b);font-size:17px;font-weight:600}
+.pdot{width:36px;height:36px;border-radius:50%;background:#fff;color:var(--accent-lo);display:grid;place-items:center;font-size:18px;position:relative}
+.pill.live .pdot::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--accent-hi);animation:ping 1.8s infinite}
+body.focus .rail,body.focus .mini,body.focus .quick,body.focus .foot,body.focus .side,body.focus .top .kicker,body.focus .disc{display:none}
+body.focus.fx-open .side{display:grid;position:fixed;left:50%;bottom:24px;translate:-50% 0;width:min(430px,92vw);z-index:8;animation:pop .45s var(--ease)}
+body.focus .side .fx{max-height:68vh;overflow:auto;box-shadow:0 30px 90px #000}
 body.focus .view{padding-top:18px;padding-bottom:18px}
+body.focus .deck{grid-template-columns:minmax(0,min(780px,100%));gap:22px}
+body.focus .pill{display:inline-flex}
+body.focus #fxBtn{display:grid;place-items:center}
+body.focus .card{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"art info" "seek seek" "ctrl ctrl";column-gap:clamp(18px,3vw,32px);row-gap:16px;padding:clamp(18px,3vw,32px);border-radius:clamp(28px,5vw,44px);border:1px solid rgb(255 255 255/.14);background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 62%,#0b0b0b),color-mix(in srgb,var(--accent) 30%,#0b0b0b) 55%,color-mix(in srgb,var(--accent) 48%,#0b0b0b));box-shadow:0 50px 120px -40px rgb(var(--accent-rgb)/.7);color:#fff}
+body.focus .sleeve{grid-area:art;justify-self:start;width:clamp(96px,min(22vw,28dvh),176px);margin:0}
+body.focus .info{grid-area:info;align-self:end;padding-bottom:4px}
+body.focus h1{font-size:clamp(24px,4.4vw,44px);letter-spacing:-.03em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body.focus .artist{color:rgb(255 255 255/.8);font-size:clamp(15px,2vw,19px);margin-top:2px}
+body.focus .top{position:absolute;top:clamp(16px,2.6vw,28px);right:clamp(16px,2.6vw,28px);z-index:3}
+body.focus .round{width:46px;height:46px;font-size:21px;background:rgb(255 255 255/.16);color:#fff}
+body.focus #focusBtn{background:#fff;color:var(--accent-lo)}
+body.focus .seek{grid-area:seek;grid-template-columns:1fr 1fr;grid-template-areas:"bar bar" "cur dur";row-gap:4px;font:600 16px 'Bricolage Grotesque',sans-serif;color:#fff}
+body.focus #seek{grid-area:bar}
+body.focus #cur{grid-area:cur}
+body.focus #dur{grid-area:dur;justify-self:end}
+body.focus #seek::-webkit-slider-runnable-track{height:5px;background:linear-gradient(90deg,#fff var(--p,0%),rgb(255 255 255/.28) 0)}
+body.focus #seek::-moz-range-track{height:5px;background:linear-gradient(90deg,#fff var(--p,0%),rgb(255 255 255/.28) 0)}
+body.focus #seek::-webkit-slider-thumb{width:0;height:0;margin-top:0;transition:width .2s,height .2s,margin .2s}
+body.focus #seek:hover::-webkit-slider-thumb{width:14px;height:14px;margin-top:-4.5px}
+body.focus #seek::-moz-range-thumb{width:0;height:0}
+body.focus #seek:hover::-moz-range-thumb{width:14px;height:14px}
+body.focus .ctrl{grid-area:ctrl;justify-content:center;gap:clamp(12px,3vw,34px)}
+body.focus .ctrl button{color:#fff}
+body.focus .ctrl button:hover{background:rgb(255 255 255/.2)}
+body.focus .ctrl button.on{background:rgb(255 255 255/.22)}
+body.focus #prev,body.focus #next{width:clamp(50px,8vw,64px);height:clamp(50px,8vw,64px);background:rgb(255 255 255/.16);font-size:26px}
+body.focus #prev:hover,body.focus #next:hover{background:rgb(255 255 255/.28)}
+body.focus .ctrl .big{width:clamp(66px,11vw,88px);height:clamp(66px,11vw,88px);background:rgb(255 255 255/.94);color:var(--accent-lo);box-shadow:none;font-size:36px}
+body.focus .ctrl .big:hover{background:#fff}
 .switch-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:16px 0}
 .switch-row label{display:block;margin:0;font:14px/1.4 'Bricolage Grotesque',sans-serif;color:var(--txt)}
 .switch-row small{display:block;color:var(--mute);font-size:12px}
@@ -225,8 +259,44 @@ dialog menu{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
   .rail .end{display:flex;margin:0}
   .rail nav{margin:0}
   .deck{grid-template-columns:minmax(0,1fr);gap:24px}
-  #v-player.on{place-items:start center}
   .mini{bottom:10px}
+}
+@media(max-height:560px) and (min-width:821px){
+  .rail{padding:12px 0}
+  .logo{font-size:20px}
+  .rail nav{margin-top:14px}
+  .view{padding-top:16px;padding-bottom:16px}
+}
+@media(max-width:820px){
+  .view{padding:18px 16px}
+  .card{padding:18px;border-radius:26px}
+  .sleeve{width:clamp(150px,calc(100dvh - 500px),100%)}
+  .deck{gap:20px}
+  .rail{height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom)}
+  .toast{bottom:calc(80px + env(safe-area-inset-bottom))}
+  .mini{bottom:12px;left:12px;right:12px}
+  dialog{max-height:88dvh;overflow:auto}
+}
+@media(max-width:560px){
+  .row{grid-template-columns:44px 1fr auto;gap:12px;padding:8px}
+  .cv{width:44px;height:44px}
+  .dur{display:none}
+  .acts button{width:32px;height:32px;font-size:17px}
+  .head h1{font-size:44px}
+  .tools .search{min-width:100%}
+  .knob{grid-template-columns:70px 1fr 46px}
+  body.focus .card{grid-template-columns:minmax(0,1fr);grid-template-areas:"art" "info" "seek" "ctrl"}
+  body.focus .sleeve{justify-self:center;width:clamp(120px,min(68vw,36dvh),300px);margin-top:50px}
+  body.focus .round{width:40px;height:40px;font-size:18px}
+  body.focus .pill{font-size:15px}
+  body.focus h1{font-size:clamp(24px,7vw,32px)}
+}
+@media(pointer:coarse){
+  input[type=range]{height:30px}
+  input[type=range]::-webkit-slider-thumb{width:20px;height:20px;margin-top:-8px}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px}
+  body.focus #seek::-webkit-slider-thumb{width:16px;height:16px;margin-top:-5.5px}
+  body.focus #seek::-moz-range-thumb{width:16px;height:16px}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}}
 </style>
@@ -252,10 +322,14 @@ dialog menu{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
 <main>
   <section class="view on" id="v-player">
     <div class="deck">
+      <div class="pill" id="pill"><span class="pdot"><i class="ri-play-fill"></i></span><span id="pillText">Nada tocando</span></div>
       <article class="card" id="card">
         <div class="top">
           <div class="kicker" id="kicker">Nada tocando</div>
-          <button class="round" id="focusBtn" title="Modo foco (F)"><i class="ri-fullscreen-line"></i></button>
+          <div class="tbtns">
+            <button class="round" id="fxBtn" title="Efeitos"><i class="ri-equalizer-3-line"></i></button>
+            <button class="round" id="focusBtn" title="Modo foco (F)"><i class="ri-fullscreen-line"></i></button>
+          </div>
         </div>
         <div class="sleeve">
           <div class="tilt" id="tilt">
@@ -278,7 +352,7 @@ dialog menu{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
       </article>
       <div class="side" id="side">
         <div class="quick" id="quick" hidden>
-          <button class="btn flat small" id="qPub"><i class="ri-bookmark-line"></i><span>Biblioteca</span></button>
+          <button class="btn flat small" id="qPub"><i class="ri-global-line"></i><span>Publicar</span></button>
           <button class="btn flat small" id="qPl"><i class="ri-play-list-add-line"></i>Playlist</button>
           <button class="btn flat small" id="qCover"><i class="ri-image-add-line"></i>Capa</button>
         </div>
@@ -303,8 +377,8 @@ dialog menu{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
       <button class="btn" id="libAdd"><i class="ri-upload-2-line"></i>Adicionar</button>
     </div>
     <div class="seg" id="seg">
-      <button class="chip on" data-tab="history">Histórico</button>
-      <button class="chip" data-tab="library">Biblioteca</button>
+      <button class="chip on" data-tab="library"><i class="ri-global-line"></i> Biblioteca</button>
+      <button class="chip" data-tab="history">Histórico</button>
       <button class="chip" data-tab="playlists">Playlists</button>
     </div>
     <div class="tools" id="tools">
@@ -429,9 +503,10 @@ const rateOf = ({ slowed, speedup }) => (slowed > 0 ? 1 - slowed * 0.5 : 1 + spe
 const state = {
   user: null,
   rows: [],
+  pub: [],
   playlists: [],
   open: new Set(),
-  tab: 'history',
+  tab: 'library',
   query: '',
   sort: 'recent',
   queue: [],
@@ -444,7 +519,8 @@ const state = {
   now: { id: null, blob: null, title: '', artist: '', cover: null, coverBlob: null }
 }
 const cache = new Map()
-const byId = id => state.rows.find(r => sid(r.id) === sid(id))
+const mine = id => state.rows.find(r => sid(r.id) === sid(id))
+const byId = id => mine(id) || state.pub.find(r => sid(r.id) === sid(id))
 
 const audio = new Audio()
 audio.preservesPitch = audio.mozPreservesPitch = audio.webkitPreservesPitch = false
@@ -770,8 +846,8 @@ function visibleRows() {
     title: (a, b) => a.title.localeCompare(b.title),
     artist: (a, b) => (a.artist || '').localeCompare(b.artist || '')
   }
-  return state.rows
-    .filter(r => (state.tab === 'library' ? r.published : true) && `${r.title} ${r.artist || ''}`.toLowerCase().includes(q))
+  return (state.tab === 'library' ? state.pub : state.rows)
+    .filter(r => `${r.title} ${r.artist || ''}`.toLowerCase().includes(q))
     .sort(sorters[state.sort])
 }
 
@@ -780,16 +856,17 @@ function trackRow(r, i) {
   const tag = tagOf(r.settings)
   const date = new Date(r.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
   const now = sid(r.id) === sid(state.now.id)
+  const own = !!mine(r.id)
+  const badge = own && r.published && state.tab === 'history' ? ' · <em class="tag">pública</em>' : own && state.tab === 'library' ? ' · <em class="tag">sua</em>' : ''
   return `
     <li class="row${now ? ' now' : ''}${now && !audio.paused ? ' live' : ''}" data-id="${esc(r.id)}" style="--i:${Math.min(i, 14)}">
       <button class="cv" data-act="play" style="background:${esc(bg)}"><i class="ri-play-fill"></i><b class="bars"><u></u><u></u><u></u></b></button>
-      <div class="meta"><strong>${esc(r.title)}</strong><span>${esc(r.artist || 'Artista desconhecido')}${tag ? ` · <em class="tag">${tag}</em>` : ''}</span></div>
+      <div class="meta"><strong>${esc(r.title)}</strong><span>${esc(r.artist || 'Artista desconhecido')}${tag ? ` · <em class="tag">${tag}</em>` : ''}${badge}</span></div>
       <span class="dur">${date}</span>
       <div class="acts">
-        <button data-act="pub" title="${r.published ? 'Tirar da biblioteca' : 'Adicionar à biblioteca'}" class="${r.published ? 'liked' : ''}"><i class="${r.published ? 'ri-bookmark-fill' : 'ri-bookmark-line'}"></i></button>
-        <button data-act="pick" title="Playlist"><i class="ri-play-list-add-line"></i></button>
-        <button data-act="edit" title="Editar"><i class="ri-pencil-line"></i></button>
-        <button data-act="del" class="del" title="Excluir"><i class="ri-delete-bin-6-line"></i></button>
+        ${own ? `<button data-act="pub" title="${r.published ? 'Tirar da biblioteca pública' : 'Publicar na biblioteca pública'}" class="${r.published ? 'liked' : ''}"><i class="${r.published ? 'ri-global-fill' : 'ri-global-line'}"></i></button>` : ''}
+        ${state.user ? '<button data-act="pick" title="Playlist"><i class="ri-play-list-add-line"></i></button>' : ''}
+        ${own ? '<button data-act="edit" title="Editar"><i class="ri-pencil-line"></i></button><button data-act="del" class="del" title="Excluir"><i class="ri-delete-bin-6-line"></i></button>' : ''}
       </div>
     </li>`
 }
@@ -816,8 +893,11 @@ function renderLibrary(anim = false) {
   const list = $('#list')
   list.classList.toggle('anim', anim)
   $('#tools').hidden = state.tab === 'playlists'
-  $('#stats').textContent = state.user ? `${state.rows.length} músicas · ${state.rows.filter(r => r.published).length} na biblioteca · ${state.playlists.length} playlists` : 'Você não está logado'
-  if (!state.user) {
+  const loggedOnly = state.tab !== 'library'
+  $('#stats').textContent = state.tab === 'library'
+    ? `${state.pub.length} músicas públicas`
+    : state.user ? `${state.rows.length} músicas · ${state.rows.filter(r => r.published).length} públicas · ${state.playlists.length} playlists` : 'Você não está logado'
+  if (!state.user && loggedOnly) {
     list.innerHTML = `<div class="empty"><div class="rings"><i class="ri-user-3-line"></i></div><p>Entre para guardar suas músicas, playlists e histórico.</p><button class="btn" data-auth><i class="ri-login-box-line"></i>Entrar</button></div>`
     return
   }
@@ -828,8 +908,11 @@ function renderLibrary(anim = false) {
   }
   const rows = visibleRows()
   if (!rows.length) {
-    list.innerHTML = state.rows.length
-      ? `<div class="empty"><i class="ri-search-line" style="font-size:36px"></i><p>${state.tab === 'library' && !state.query ? 'Use o marcador de uma música para colocá-la aqui.' : 'Nada encontrado.'}</p></div>`
+    const source = state.tab === 'library' ? state.pub : state.rows
+    list.innerHTML = source.length
+      ? `<div class="empty"><i class="ri-search-line" style="font-size:36px"></i><p>Nada encontrado.</p></div>`
+      : state.tab === 'library'
+        ? `<div class="empty"><div class="rings"><i class="ri-global-line"></i></div><p>Ninguém publicou nada ainda.<br>Publique uma música sua com o ícone de globo.</p></div>`
       : `<div class="empty"><div class="rings"><i class="ri-music-2-line"></i></div><p>Nada por aqui ainda.</p><button class="btn" data-pick><i class="ri-upload-2-line"></i>Escolher músicas</button></div>`
     return
   }
@@ -854,19 +937,26 @@ function updateLabel() {
 
 function syncQuick() {
   const n = state.now
-  const row = n.id !== null ? byId(n.id) : null
+  const own = n.id !== null ? mine(n.id) : null
   $('#quick').hidden = !n.blob
-  $('#qPl').hidden = !row
-  $('#qPub').hidden = !row
-  $('#qPub i').className = row && row.published ? 'ri-bookmark-fill' : 'ri-bookmark-line'
-  $('#qPub span').textContent = row && row.published ? 'Na biblioteca' : 'Biblioteca'
+  $('#qPl').hidden = !(state.user && n.id !== null && byId(n.id))
+  $('#qPub').hidden = !own
+  $('#qPub i').className = own && own.published ? 'ri-global-fill' : 'ri-global-line'
+  $('#qPub span').textContent = own && own.published ? 'Pública' : 'Publicar'
+}
+
+function syncPill() {
+  const playing = !audio.paused
+  const text = !state.now.blob ? 'Nada tocando' : playing ? 'Tocando agora' : 'Pausado'
+  $('#pillText').textContent = text
+  $('#kicker').textContent = text
+  $('#pill').classList.toggle('live', playing)
 }
 
 function updateNow() {
   const n = state.now
   document.body.classList.toggle('has-track', !!n.blob)
   updateLabel()
-  $('#kicker').textContent = n.blob ? 'Tocando agora' : 'Nada tocando'
   scramble($('#title'), n.blob ? n.title : 'Solte um som')
   $('#artist').textContent = n.blob ? n.artist || 'Artista desconhecido' : 'Adicione músicas para começar.'
   $('#cur').textContent = '0:00'
@@ -878,6 +968,7 @@ function updateNow() {
   $('#miniArtist').textContent = n.artist || ''
   if (n.blob && 'mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: n.title, artist: n.artist || '' })
   syncQuick()
+  syncPill()
   markNow()
 }
 
@@ -913,7 +1004,7 @@ async function openRow(id, ids) {
   if (!blob) {
     toast('Carregando…')
     const { data, error } = await sb.storage.from('audio').download(row.storage_path)
-    if (error) return toast('Não consegui baixar esse áudio.')
+    if (error) return toast(mine(row.id) ? 'Não consegui baixar esse áudio.' : 'Não consegui abrir essa música. Falta liberar a leitura pública no Supabase.')
     blob = data
     cache.set(sid(row.id), blob)
   }
@@ -954,6 +1045,7 @@ function syncPlayState() {
   const icon = playing ? 'ri-pause-fill' : 'ri-play-fill'
   $('#play i').className = icon
   $('#miniPlay i').className = icon
+  syncPill()
   markNow()
 }
 
@@ -1004,16 +1096,15 @@ async function addFiles(files) {
 
 async function saveNow() {
   const n = state.now
-  if (!state.user || n.id === null) return
+  if (!state.user || n.id === null || !mine(n.id)) return
   const fields = { title: n.title, artist: n.artist, settings: { ...state.fx } }
   const { error } = await sb.from('history').update(fields).eq('id', n.id)
   if (error) return console.error(error)
-  const row = byId(n.id)
-  if (row) Object.assign(row, fields)
+  Object.assign(mine(n.id), fields)
 }
 
 async function setPublished(id, on) {
-  const row = byId(id)
+  const row = mine(id)
   if (!row) return
   const fields = { published: on }
   if (on && sid(row.id) === sid(state.now.id)) {
@@ -1030,15 +1121,18 @@ async function setPublished(id, on) {
   const { data, error } = await sb.from('history').update(fields).eq('id', row.id).select().single()
   if (error) return toast(/column|published|cover_/i.test(error.message || '') ? 'Falta rodar o SQL novo no Supabase.' : 'Não consegui atualizar.')
   Object.assign(row, data)
+  state.pub = state.pub.filter(r => sid(r.id) !== sid(row.id))
+  if (row.published) state.pub.unshift(row)
   renderLibrary()
   syncQuick()
-  toast(on ? 'Adicionada à biblioteca' : 'Tirada da biblioteca')
+  toast(on ? 'Publicada. Qualquer pessoa pode ouvir.' : 'Tirada da biblioteca pública')
 }
 
 function removeRow(id) {
-  const row = byId(id)
+  const row = mine(id)
   if (!row) return
   state.rows = state.rows.filter(r => r !== row)
+  state.pub = state.pub.filter(r => r !== row)
   if (sid(state.now.id) === sid(row.id)) {
     audio.pause()
     audio.removeAttribute('src')
@@ -1052,6 +1146,7 @@ function removeRow(id) {
     if (error) {
       console.error(error)
       state.rows.push(row)
+      if (row.published) state.pub.push(row)
       renderLibrary()
       return toast('Sem permissão para excluir. Falta a policy de delete no Supabase.')
     }
@@ -1063,11 +1158,11 @@ function removeRow(id) {
       sb.from('playlists').update({ track_ids: pl.track_ids }).eq('id', pl.id)
     }
     if (state.tab === 'playlists') renderLibrary()
-  }, () => { state.rows.push(row); renderLibrary() })
+  }, () => { state.rows.push(row); if (row.published) state.pub.push(row); renderLibrary() })
 }
 
 function openEdit(id) {
-  const row = byId(id)
+  const row = mine(id)
   if (!row) return
   state.editing = row.id
   const form = $('#editForm')
@@ -1077,7 +1172,7 @@ function openEdit(id) {
 }
 
 async function saveEdit() {
-  const row = byId(state.editing)
+  const row = mine(state.editing)
   const form = $('#editForm')
   const fields = { title: form.title.value.trim() || row.title, artist: form.artist.value.trim() }
   const { error } = await sb.from('history').update(fields).eq('id', row.id)
@@ -1191,14 +1286,30 @@ async function changeAvatar(file) {
   if (error) console.error(error)
 }
 
+function mergePublic() {
+  state.pub = state.pub.map(r => mine(r.id) || r)
+}
+
+let pubFetchedAt = 0
+async function loadPublic(force = false) {
+  if (!force && Date.now() - pubFetchedAt < 15000) return
+  pubFetchedAt = Date.now()
+  const { data, error } = await sb.from('history').select('*').eq('published', true).order('created_at', { ascending: false }).limit(300)
+  if (error) return console.error(error)
+  const grew = data.length !== state.pub.length
+  state.pub = data.map(r => mine(r.id) || r)
+  if (state.tab === 'library') renderLibrary(grew)
+}
+
 async function loadLibrary() {
   const [lists, saved] = await Promise.all([
     sb.from('playlists').select('*').order('created_at', { ascending: false }),
-    sb.from('history').select('*').order('created_at', { ascending: false }).limit(500)
+    sb.from('history').select('*').eq('user_id', state.user.id).order('created_at', { ascending: false }).limit(500)
   ])
   if (lists.error || saved.error) return console.error(lists.error || saved.error)
   state.playlists = lists.data
   state.rows = saved.data
+  mergePublic()
   renderLibrary(true)
   syncQuick()
 }
@@ -1253,6 +1364,7 @@ function setTab(tab) {
   state.tab = tab
   $$('#seg .chip').forEach(c => c.classList.toggle('on', c.dataset.tab === tab))
   renderLibrary(true)
+  if (tab === 'library') loadPublic()
 }
 
 function setView(name) {
@@ -1262,6 +1374,7 @@ function setView(name) {
   const next = $('#v-' + name)
   void next.offsetWidth
   next.classList.add('on')
+  if (name === 'library' && state.tab === 'library') loadPublic()
 }
 
 const barsCv = $('#bars')
@@ -1275,14 +1388,14 @@ let lastTick = performance.now()
 
 function sizeBars() {
   const dpr = devicePixelRatio || 1
-  barsCv.width = innerWidth * dpr
-  barsCv.height = innerHeight * dpr
+  barsCv.width = barsCv.clientWidth * dpr
+  barsCv.height = barsCv.clientHeight * dpr
   bc.setTransform(dpr, 0, 0, dpr, 0, 0)
 }
 
 function drawBars(now, playing) {
-  const w = innerWidth
-  const h = innerHeight
+  const w = barsCv.clientWidth
+  const h = barsCv.clientHeight
   const count = Math.min(140, Math.max(24, Math.floor(w / 13)))
   if (levels.length !== count) levels = new Float32Array(count)
   const step = w / count
@@ -1330,6 +1443,7 @@ function frame(now) {
 function setFocus(on = !document.body.classList.contains('focus')) {
   if (on) setView('player')
   document.body.classList.toggle('focus', on)
+  if (!on) document.body.classList.remove('fx-open')
   $('#focusBtn i').className = on ? 'ri-fullscreen-exit-line' : 'ri-fullscreen-line'
 }
 
@@ -1337,6 +1451,7 @@ function bindTilt() {
   const tilt = $('#tilt')
   const card = $('#card')
   card.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return
     const r = tilt.getBoundingClientRect()
     const x = (e.clientX - r.left) / r.width - 0.5
     const y = (e.clientY - r.top) / r.height - 0.5
@@ -1367,6 +1482,7 @@ function bindSettings() {
 function bindMagnets() {
   $$('.big, .btn, .tab').forEach(el => {
     el.addEventListener('pointermove', e => {
+      if (e.pointerType !== 'mouse') return
       const r = el.getBoundingClientRect()
       el.style.translate = `${(e.clientX - r.left - r.width / 2) * 0.18}px ${(e.clientY - r.top - r.height / 2) * 0.18}px`
     })
@@ -1395,6 +1511,7 @@ function bindUI() {
   $('#miniPrev').addEventListener('click', () => step(-1))
   $('#miniNext').addEventListener('click', () => step(1))
   $('#focusBtn').addEventListener('click', () => setFocus())
+  $('#fxBtn').addEventListener('click', () => document.body.classList.toggle('fx-open'))
   for (const id of ['railAdd', 'libAdd']) $('#' + id).addEventListener('click', () => $('#file').click())
   $('#file').addEventListener('change', e => { addFiles(e.target.files); e.target.value = '' })
 
@@ -1416,7 +1533,7 @@ function bindUI() {
     const id = rowEl?.dataset.id
     const pl = plEl && state.playlists.find(p => sid(p.id) === plEl.dataset.pl)
     if (act === 'play') openRow(id, visibleRows().map(r => r.id))
-    if (act === 'pub') { const r = byId(id); setPublished(r.id, !r.published) }
+    if (act === 'pub') { const r = mine(id); if (r) setPublished(r.id, !r.published) }
     if (act === 'pick') openPicker(id)
     if (act === 'edit') openEdit(id)
     if (act === 'del') removeRow(id)
@@ -1465,7 +1582,7 @@ function bindUI() {
   })
 
   $('#qPl').addEventListener('click', () => openPicker(state.now.id))
-  $('#qPub').addEventListener('click', () => { const r = byId(state.now.id); if (r) setPublished(r.id, !r.published) })
+  $('#qPub').addEventListener('click', () => { const r = mine(state.now.id); if (r) setPublished(r.id, !r.published) })
   $('#qCover').addEventListener('click', () => $('#coverFile').click())
   $('#coverFile').addEventListener('change', async e => {
     const file = e.target.files[0]
@@ -1477,7 +1594,7 @@ function bindUI() {
     } catch { return toast('Não consegui abrir essa imagem.') }
     updateLabel()
     accentFromCover(state.now.cover)
-    const row = byId(state.now.id)
+    const row = mine(state.now.id)
     if (row && row.published) setPublished(row.id, true)
     else toast(row ? 'Capa pronta. Ela é salva quando você adiciona à biblioteca.' : 'Capa aplicada.')
   })
@@ -1524,7 +1641,7 @@ function bindUI() {
     if (e.code === 'ArrowRight') audio.currentTime += 5
     if (e.code === 'ArrowLeft') audio.currentTime -= 5
     if (e.key === 'f') setFocus()
-    if (e.key === 'Escape') setFocus(false)
+    if (e.key === 'Escape') document.body.classList.contains('fx-open') ? document.body.classList.remove('fx-open') : setFocus(false)
     if (e.key === 'n') step(1)
     if (e.key === 'p') step(-1)
   })
@@ -1567,6 +1684,7 @@ function start() {
   })
   sb.auth.getSession().then(({ data }) => { if (data.session && !state.user) signedIn(data.session.user) })
 
+  loadPublic(true)
   loadStats()
   requestAnimationFrame(frame)
 }
