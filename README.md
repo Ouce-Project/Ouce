@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.svg" alt="Ouce" width="120">
+<img src="assets/logo.png" alt="Ouce" width="120">
 
 # Ouce
 
