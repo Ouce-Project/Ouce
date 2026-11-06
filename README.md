@@ -6,12 +6,12 @@
 
 Player de música no navegador com slowed, reverb e speed up em tempo real. Cada pessoa guarda a própria biblioteca, monta playlists e pode publicar faixas para qualquer um ouvir.
 
-![Supabase](https://img.shields.io/badge/Supabase-0330ef?style=flat-square&labelColor=5b1592&logo=supabase&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-20%2B-0330ef?style=flat-square&labelColor=5b1592&logo=nodedotjs&logoColor=white)
-![Web Audio](https://img.shields.io/badge/Web_Audio-API-0330ef?style=flat-square&labelColor=5b1592)
-![ES Modules](https://img.shields.io/badge/JavaScript-ES_Modules-0330ef?style=flat-square&labelColor=5b1592&logo=javascript&logoColor=white)
-![Remix Icon](https://img.shields.io/badge/Remix_Icon-4.6-0330ef?style=flat-square&labelColor=5b1592)
-![Licença](https://img.shields.io/badge/licen%C3%A7a-PolyForm--Noncommercial--1.0.0-0330ef?style=flat-square&labelColor=5b1592)
+![Supabase](https://img.shields.io/badge/Supabase-0330ef?style=flat-square&labelColor=0B0B0B&logo=supabase&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-20%2B-0330ef?style=flat-square&labelColor=0B0B0B&logo=nodedotjs&logoColor=white)
+![Web Audio](https://img.shields.io/badge/Web_Audio-API-0330ef?style=flat-square&labelColor=0B0B0B)
+![ES Modules](https://img.shields.io/badge/JavaScript-ES_Modules-0330ef?style=flat-square&labelColor=0B0B0B&logo=javascript&logoColor=white)
+![Remix Icon](https://img.shields.io/badge/Remix_Icon-4.6-0330ef?style=flat-square&labelColor=0B0B0B)
+![Licença](https://img.shields.io/badge/licen%C3%A7a-PolyForm--Noncommercial--1.0.0-0330ef?style=flat-square&labelColor=0B0B0B)
 
 </div>
 
