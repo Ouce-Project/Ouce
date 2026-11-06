@@ -73,16 +73,18 @@ function frame(now) {
 }
 
 function bindTilt() {
-  const tilt = $('#tilt')
   const card = $('#card')
-  card.addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse') return
-    const r = tilt.getBoundingClientRect()
-    const x = (e.clientX - r.left) / r.width - 0.5
-    const y = (e.clientY - r.top) / r.height - 0.5
-    tilt.style.transform = `rotateY(${x * 12}deg) rotateX(${-y * 12}deg)`
+  let box
+  card.addEventListener('pointerenter', e => {
+    if (e.pointerType === 'mouse') box = card.getBoundingClientRect()
   })
-  card.addEventListener('pointerleave', () => { tilt.style.transform = '' })
+  card.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || !box) return
+    const x = (e.clientX - box.left) / box.width - 0.5
+    const y = (e.clientY - box.top) / box.height - 0.5
+    card.style.transform = `perspective(1100px) rotateY(${x * 9}deg) rotateX(${-y * 9}deg)`
+  })
+  card.addEventListener('pointerleave', () => { card.style.transform = '' })
 }
 
 function bindMagnets() {

@@ -77,7 +77,9 @@ Para aparecer no Google, adicione `ouce.site` como propriedade de domínio no Se
 
 - Slowed, speed up, reverb e grave ajustáveis na hora, com presets
 - Vinil que gira junto com a velocidade e equalizador de fundo que reage ao áudio
-- Modo foco com cartão largo e painel de efeitos flutuante
+- Cartão do player com inclinação em 3D ao passar o mouse
+- Modo foco com cartão largo, detalhes na cor do tema e painel de efeitos flutuante
+- Download da música já editada, em WAV, com os efeitos aplicados
 - A cor do site acompanha a capa da música, ou fica na cor que você escolher em hex
 - Histórico, playlists e biblioteca pública com login
 - Upload por clique ou arrastando arquivos, com capa lida direto do MP3
@@ -102,7 +104,7 @@ Slowed e speed up se anulam. O tom acompanha a velocidade (`preservesPitch` desl
 | Preto | ![#0B0B0B](https://img.shields.io/badge/-%230B0B0B-0B0B0B?style=flat-square) |
 | Cinza escuro | ![#0F0F0F](https://img.shields.io/badge/-%230F0F0F-0F0F0F?style=flat-square) |
 
-Os tons de destaque (`--accent-hi`, `--accent-lo`) são derivados da cor principal em `app/js/theme.js`. O logo do Ouce está em `site/assets/logo.png` e o do player em `app/assets/logo.png`. A cor escolhida fica no `localStorage` (`ouce_pref_accent`); a que vem da capa vale só para a música atual e some ao recarregar.
+Os tons de destaque (`--accent-hi`, `--accent-lo`) são derivados da cor principal em `app/js/theme.js`. O logo "ouce" (`site/assets/logo.png` e `wordmark.png`) fica nos espaços grandes. O símbolo de música (`symbol.png`, `app/assets/logo.png`) fica nos pequenos, como o ícone da barra e da aba. A cor escolhida fica no `localStorage` (`ouce_pref_accent`); a que vem da capa vale só para a música atual e some ao recarregar.
 
 ## Atalhos
 
@@ -131,6 +133,7 @@ Ouce/
 │     ├─ effects.js        sliders e presets
 │     ├─ library.js        listas e abas
 │     ├─ tracks.js         envio, edição, publicação, exclusão
+│     ├─ download.js       exporta a música editada em WAV
 │     ├─ playlists.js      playlists
 │     ├─ auth.js           login, cadastro, foto de perfil
 │     ├─ theme.js          cor automática pela capa

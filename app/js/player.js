@@ -33,6 +33,7 @@ export function syncQuick() {
   const n = state.now
   const own = n.id !== null ? mine(n.id) : null
   $('#quick').hidden = !n.blob
+  $('#dlBtn').hidden = !n.blob
   $('#qPl').hidden = !(state.user && n.id !== null && byId(n.id))
   $('#qPub').hidden = !own
   $('#qPub i').className = own && own.published ? 'ri-global-fill' : 'ri-global-line'

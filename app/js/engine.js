@@ -3,7 +3,7 @@ import { audio, state } from './state.js'
 
 export const engine = { ctx: null, nodes: null }
 
-function makeImpulse(c, secs = 3, decay = 2.6) {
+export function makeImpulse(c, secs = 3, decay = 2.6) {
   const len = c.sampleRate * secs
   const buf = c.createBuffer(2, len, c.sampleRate)
   for (let ch = 0; ch < 2; ch++) {

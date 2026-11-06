@@ -4,7 +4,8 @@ body.focus .side .fx{max-height:68vh;overflow:auto}
 body.focus .view{padding-top:18px;padding-bottom:18px}
 body.focus .deck{grid-template-columns:minmax(0,min(720px,100%))}
 body.focus #fxBtn{display:grid;place-items:center}
-body.focus .card{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"art info" "seek seek" "ctrl ctrl";column-gap:clamp(18px,3vw,28px);row-gap:18px;padding:clamp(18px,3vw,28px);border-radius:24px;border:1px solid var(--line);background:var(--panel);box-shadow:none}
+body.focus .card{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"art info" "seek seek" "ctrl ctrl";column-gap:clamp(18px,3vw,28px);row-gap:18px;padding:clamp(18px,3vw,28px);border-radius:24px;border:1px solid var(--line);background:linear-gradient(to top,rgb(var(--accent-rgb)/.34),transparent 46%),var(--panel);box-shadow:0 24px 60px -34px rgb(var(--accent-rgb)/.7)}
+body.focus .card::after{content:"";position:absolute;left:14%;right:14%;bottom:-1px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent-hi),transparent)}
 body.focus .sleeve{grid-area:art;justify-self:start;width:clamp(88px,min(20vw,24dvh),148px);margin:0}
 body.focus .art{border-radius:12px;box-shadow:none}
 body.focus .art::after{display:none}

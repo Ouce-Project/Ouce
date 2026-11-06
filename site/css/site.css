@@ -17,7 +17,7 @@ section{padding:clamp(72px,11vw,132px) 0}
 .nav.scrolled{border-color:var(--line)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px}
 .brand{display:flex;align-items:center}
-.brand img{display:block;height:40px;width:auto}
+.brand img{display:block;width:40px;height:40px;border-radius:12px}
 .links{display:flex;gap:26px;font-size:14px;color:var(--mute)}
 .links a{transition:color .2s}
 .links a:hover{color:#fff}
@@ -119,7 +119,9 @@ details p{color:#b4b7c2;padding:0 0 24px;max-width:62ch}
 .final{text-align:center}
 .final h2{margin-inline:auto;margin-bottom:32px}
 footer{border-top:1px solid var(--line);padding:28px 0 36px;font:13px 'DM Mono',monospace;color:var(--mute)}
-.foot{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+.foot{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;align-items:center}
+.foot-logo{display:block;border:0!important}
+.foot-logo img{display:block;height:44px;width:auto}
 .foot a{color:var(--txt);border-bottom:1px solid #2a2a2a;transition:border-color .2s}
 .foot a:hover{border-color:var(--accent-hi)}
 

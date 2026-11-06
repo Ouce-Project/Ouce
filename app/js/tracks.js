@@ -1,4 +1,5 @@
 import { config } from './config.js'
+import { downloadEdited } from './download.js'
 import { $, sid } from './lib/dom.js'
 import { squareJpeg, toDataURL } from './lib/image.js'
 import { markNow, renderLibrary } from './library.js'
@@ -150,6 +151,7 @@ export function bindTracks() {
   $('#file').addEventListener('change', e => { addFiles(e.target.files); e.target.value = '' })
   $('#editForm').addEventListener('submit', e => { if (e.submitter && e.submitter.value === 'ok') saveEdit() })
   $('#qPub').addEventListener('click', () => { const r = mine(state.now.id); if (r) setPublished(r.id, !r.published) })
+  $('#dlBtn').addEventListener('click', downloadEdited)
   $('#qCover').addEventListener('click', () => $('#coverFile').click())
   $('#coverFile').addEventListener('change', onCoverPicked)
 
