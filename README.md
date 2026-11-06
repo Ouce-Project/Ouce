@@ -6,12 +6,12 @@
 
 Player de música no navegador com slowed, reverb e speed up em tempo real. Cada pessoa guarda a própria biblioteca, monta playlists e pode publicar faixas para qualquer um ouvir.
 
-![Supabase](https://img.shields.io/badge/Supabase-0330ef?style=flat-square&labelColor=0B0B0B&logo=supabase&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-20%2B-0330ef?style=flat-square&labelColor=0B0B0B&logo=nodedotjs&logoColor=white)
-![Web Audio](https://img.shields.io/badge/Web_Audio-API-0330ef?style=flat-square&labelColor=0B0B0B)
-![ES Modules](https://img.shields.io/badge/JavaScript-ES_Modules-0330ef?style=flat-square&labelColor=0B0B0B&logo=javascript&logoColor=white)
-![Remix Icon](https://img.shields.io/badge/Remix_Icon-4.6-0330ef?style=flat-square&labelColor=0B0B0B)
-![Licença](https://img.shields.io/badge/licen%C3%A7a-PolyForm--Noncommercial--1.0.0-0330ef?style=flat-square&labelColor=0B0B0B)
+![Supabase](https://img.shields.io/badge/Supabase-5b1592?style=flat-square&labelColor=0B0B0B&logo=supabase&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-20%2B-5b1592?style=flat-square&labelColor=0B0B0B&logo=nodedotjs&logoColor=white)
+![Web Audio](https://img.shields.io/badge/Web_Audio-API-5b1592?style=flat-square&labelColor=0B0B0B)
+![ES Modules](https://img.shields.io/badge/JavaScript-ES_Modules-5b1592?style=flat-square&labelColor=0B0B0B&logo=javascript&logoColor=white)
+![Remix Icon](https://img.shields.io/badge/Remix_Icon-4.6-5b1592?style=flat-square&labelColor=0B0B0B)
+![Licença](https://img.shields.io/badge/licen%C3%A7a-PolyForm--Noncommercial--1.0.0-5b1592?style=flat-square&labelColor=0B0B0B)
 
 </div>
 
@@ -77,7 +77,7 @@ Slowed e speed up se anulam. O tom acompanha a velocidade (`preservesPitch` desl
 
 | Uso | Hex |
 |---|---|
-| Principal | ![#0330ef](https://img.shields.io/badge/-%230330EF-0330ef?style=flat-square) |
+| Principal | ![#5b1592](https://img.shields.io/badge/-%235b1592-5b1592?style=flat-square) |
 | Preto | ![#0B0B0B](https://img.shields.io/badge/-%230B0B0B-0B0B0B?style=flat-square) |
 | Cinza escuro | ![#0F0F0F](https://img.shields.io/badge/-%230F0F0F-0F0F0F?style=flat-square) |
 
