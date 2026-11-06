@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo1.png" alt="Ouce" width="120">
+<img src="site/assets/logo.png" alt="Ouce" width="120">
 
 # Ouce
 
@@ -20,16 +20,15 @@ Player de música no navegador com slowed, reverb e speed up em tempo real. Cada
 Requer Node.js 20+ (só para servir os arquivos) e um projeto no [Supabase](https://supabase.com).
 
 ```bash
-git clone https://github.com/xMqRs/ouce
-cd ouce
-cp js/config.example.js js/config.js
+git clone https://github.com/Ouce-Project/Ouce
+cd Ouce
 ```
 
-Não há dependências para instalar. O site é HTML, CSS e módulos ES puros.
+Não há dependências para instalar. Tudo é HTML, CSS e módulos ES puros.
 
 ## Configuração
 
-Edite `js/config.js`:
+Edite `app/js/config.js` (o modelo está em `app/js/config.example.js`):
 
 | Variável | Obrigatória | Padrão |
 |---|---|---|
@@ -40,17 +39,39 @@ Edite `js/config.js`:
 > [!IMPORTANT]
 > Rode `supabase/schema.sql` no SQL Editor do seu projeto antes de abrir o site. Sem ele não existem as tabelas, o bucket nem as políticas, e login, histórico, playlists e biblioteca pública não funcionam.
 
-A chave `anon` é pública por natureza: ela vai para o navegador de qualquer jeito. Quem protege os dados são as políticas de RLS do `schema.sql`. Nunca use a chave `service_role` aqui.
+A chave `anon` é pública por natureza: ela vai para o navegador de qualquer jeito, por isso o `config.js` é versionado e a Vercel consegue publicá-lo. Quem protege os dados são as políticas de RLS do `schema.sql`. Nunca use a chave `service_role` aqui.
 
 O schema foi reconstruído a partir de como o código usa as tabelas. Se você já tem um banco rodando, confira os tipos das colunas antes de aplicar.
 
 ## Execução
 
 ```bash
-npm run dev
+npm run dev        # player em http://localhost:3000
+npm run dev:site   # página de info em http://localhost:3001
 ```
 
-Abra `http://localhost:3000`. Abrir o `index.html` direto pelo explorador de arquivos não funciona, porque o site usa módulos ES e o navegador bloqueia imports em `file://`.
+Abrir o `index.html` direto pelo explorador de arquivos não funciona, porque o player usa módulos ES e o navegador bloqueia imports em `file://`.
+
+## Publicação
+
+O repositório tem duas pastas publicáveis, cada uma em um projeto da Vercel (Framework Preset `Other`, sem build):
+
+| Projeto | Root Directory | Domínio |
+|---|---|---|
+| Página de info | `site` | `ouce.site` (e `www.ouce.site` redirecionando) |
+| Player | `app` | `app.ouce.site` |
+
+DNS na Hostinger (Domínios, DNS / Servidores de nomes):
+
+| Tipo | Nome | Valor |
+|---|---|---|
+| A | `@` | `76.76.21.21` |
+| CNAME | `app` | valor exibido pela Vercel no domínio |
+| CNAME | `www` | valor exibido pela Vercel no domínio |
+
+Apague antes os registros A, AAAA e o `www` padrão que a Hostinger cria. No Supabase, em Authentication, URL Configuration, use `https://app.ouce.site` como Site URL e `https://app.ouce.site/**` em Redirect URLs.
+
+Para aparecer no Google, adicione `ouce.site` como propriedade de domínio no Search Console (a verificação é um registro TXT no DNS da Hostinger) e envie o sitemap `https://ouce.site/sitemap.xml`.
 
 ## O que tem
 
@@ -77,11 +98,11 @@ Slowed e speed up se anulam. O tom acompanha a velocidade (`preservesPitch` desl
 
 | Uso | Hex |
 |---|---|
-| Principal | ![#5b1592](https://img.shields.io/badge/-%235b1592-5b1592?style=flat-square) |
+| Principal | ![#5b1592](https://img.shields.io/badge/-%235B1592-5b1592?style=flat-square) |
 | Preto | ![#0B0B0B](https://img.shields.io/badge/-%230B0B0B-0B0B0B?style=flat-square) |
 | Cinza escuro | ![#0F0F0F](https://img.shields.io/badge/-%230F0F0F-0F0F0F?style=flat-square) |
 
-Os tons de destaque (`--accent-hi`, `--accent-lo`) são derivados da cor principal em `js/theme.js`. A cor escolhida fica no `localStorage` (`ouce_pref_accent`); a que vem da capa vale só para a música atual e some ao recarregar.
+Os tons de destaque (`--accent-hi`, `--accent-lo`) são derivados da cor principal em `app/js/theme.js`. O logo do Ouce está em `site/assets/logo.png` e o do player em `app/assets/logo.png`. A cor escolhida fica no `localStorage` (`ouce_pref_accent`); a que vem da capa vale só para a música atual e some ao recarregar.
 
 ## Atalhos
 
@@ -96,37 +117,35 @@ Os tons de destaque (`--accent-hi`, `--accent-lo`) são derivados da cor princip
 ## Estrutura
 
 ```
-ouce/
-├─ index.html
-├─ assets/logo.svg
-├─ css/
-│  ├─ tokens.css        cores e variáveis
-│  ├─ base.css          reset, fundo, abertura
-│  ├─ layout.css        barra lateral e telas
-│  ├─ player.css        cartão do player e efeitos
-│  ├─ focus.css         modo foco
-│  ├─ library.css       listas, playlists, mini player
-│  ├─ components.css    botões, diálogos, avisos
-│  └─ responsive.css    telas pequenas e toque
-├─ js/
-│  ├─ main.js           ponto de entrada
-│  ├─ config.example.js modelo da configuração
-│  ├─ supabase.js       cliente
-│  ├─ state.js          estado global e elemento de áudio
-│  ├─ engine.js         grafo do Web Audio (reverb, grave)
-│  ├─ player.js         reprodução e fila
-│  ├─ effects.js        sliders e presets
-│  ├─ library.js        listas e abas
-│  ├─ tracks.js         envio, edição, publicação, exclusão
-│  ├─ playlists.js      playlists
-│  ├─ auth.js           login, cadastro, foto de perfil
-│  ├─ theme.js          cor automática pela capa
-│  ├─ views.js          troca de telas e modo foco
-│  ├─ visuals.js        equalizador de fundo e animações
-│  ├─ stats.js          contadores do site
-│  ├─ ui.js             avisos e utilitários de interface
-│  └─ lib/              funções puras (dom, imagem, ID3, efeitos)
-└─ supabase/schema.sql  tabelas, funções e políticas
+Ouce/
+├─ app/                    o player
+│  ├─ index.html
+│  ├─ css/                 tokens, base, layout, player, focus, library, components, responsive
+│  └─ js/
+│     ├─ main.js           ponto de entrada
+│     ├─ config.js         dados do Supabase
+│     ├─ supabase.js       cliente
+│     ├─ state.js          estado global e elemento de áudio
+│     ├─ engine.js         grafo do Web Audio (reverb, grave)
+│     ├─ player.js         reprodução e fila
+│     ├─ effects.js        sliders e presets
+│     ├─ library.js        listas e abas
+│     ├─ tracks.js         envio, edição, publicação, exclusão
+│     ├─ playlists.js      playlists
+│     ├─ auth.js           login, cadastro, foto de perfil
+│     ├─ theme.js          cor automática pela capa
+│     ├─ views.js          troca de telas e modo foco
+│     ├─ visuals.js        equalizador de fundo e animações
+│     ├─ stats.js          contadores do site
+│     ├─ ui.js             avisos e utilitários de interface
+│     └─ lib/              funções puras (dom, imagem, ID3, efeitos)
+├─ site/                   página de info (ouce.site)
+│  ├─ index.html           conteúdo, SEO e dados estruturados
+│  ├─ robots.txt, sitemap.xml, vercel.json
+│  ├─ assets/              logo, wordmark, imagem de compartilhamento, ícones
+│  ├─ css/
+│  └─ js/                  demo de áudio, equalizador, animações
+└─ supabase/schema.sql     tabelas, funções e políticas
 ```
 
 ## Licença

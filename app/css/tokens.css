@@ -1,0 +1,14 @@
+:root{
+  --accent:#5b1592;
+  --accent-rgb:91 21 146;
+  --accent-hi:#a756e7;
+  --accent-hi-rgb:167 86 231;
+  --accent-lo:#3a0d5c;
+  --on-accent:#fff;
+  --ink:#0B0B0B;
+  --panel:#0F0F0F;
+  --line:#1d1d1d;
+  --txt:#f1f2f6;
+  --mute:#80838f;
+  --ease:cubic-bezier(.7,0,.2,1);
+}
